@@ -383,69 +383,151 @@ const restForm = ()=>{
 
 
 //登录、注册、重置密码提交表单
-const doSubmit = ()=>{
-  formDataRef.value.validate(async (valid)=>{
-    if(!valid){
+// const doSubmit = ()=>{
+//   formDataRef.value.validate(async (valid)=>{
+//     if(!valid){
+//       return;
+//     }
+//     if(opType.value == 0){
+//       //注册
+//     instance.post('/api/users/register',{
+//         username:formData.value.nickName,
+//         password: formData.value.password,
+//         email:formData.value.email,
+//         code: formData.value.emailCode,
+//     })
+//     .then(function(response){
+//       console.log(response);
+//       proxy.Message.success("注册成功");
+//       showPanel(1);
+//     })
+//     .catch(function(error){
+//       console.log(error);
+//     })
+
+
+//     }else if(opType.value == 1){
+//       //登录
+//     instance.post('/api/users/login',{
+//         email:formData.value.email,
+//         password: formData.value.password
+//     })
+//     .then(function(response){
+//       // console.log(response);
+//       const status_code=response.data.status_code;
+//       if(status_code===5000){
+//         proxy.Message.success("登录成功");
+//         const token = response.data.data.token;
+//         // localStorage.setItem('token', token);
+//         instance.get('/api/users/info',{
+//           headers:{
+//             'X-Token':token
+//           }
+//         })
+//         .then(function(response2){
+//             const userInfo={
+//               username:response2.data.data.username,
+//               email:response2.data.data.email,
+//               is_banned:response2.data.data.is_banned,
+//               is_admin:response2.data.data.is_admin
+//             }
+//             console.log(userInfo);
+//         })
+//         // 跳转页面
+//         // router.push("/");
+//       }
+
+//     })
+//     .catch(function(error){
+//       console.log(error);
+//     })
+
+//     }else if(opType.value == 2){
+//       //重置密码
+//       instance.post('/api/users/reset-password',{
+//         email:formData.value.email,
+//         password: formData.value.password
+//     })
+//     .then(function(response){
+//       console.log(response);
+//       proxy.Message.success("密码重置成功");
+//       showPanel(1);
+//     })
+//     .catch(function(error){
+//       console.log(error);
+//     })
+//     }
+
+//   });
+  
+// };
+
+const doSubmit = async () => {
+  formDataRef.value.validate(async (valid) => {
+    if (!valid) {
       return;
     }
-    if(opType.value == 0){
-      //注册
-    instance.post('/api/users/register',{
-        username:formData.value.nickName,
-        password: formData.value.password,
-        email:formData.value.email,
-        code: formData.value.emailCode,
-    })
-    .then(function(response){
-      console.log(response);
-      proxy.Message.success("注册成功");
-      showPanel(1);
-    })
-    .catch(function(error){
-      console.log(error);
-    })
-
-
-    }else if(opType.value == 1){
-      //登录
-    instance.post('/api/users/login',{
-        email:formData.value.email,
-        password: formData.value.password
-    })
-    .then(function(response){
-      // console.log(response);
-      const status_code=response.data.status_code;
-      if(status_code===5000){
-        proxy.Message.success("登录成功");
-        // 跳转页面
-        router.push("/");
+    if (opType.value == 0) {
+      // 注册
+      try {
+        const response = await instance.post('/api/users/register', {
+          username: formData.value.nickName,
+          password: formData.value.password,
+          email: formData.value.email,
+          code: formData.value.emailCode,
+        });
+        console.log(response);
+        proxy.Message.success("注册成功");
+        showPanel(1);
+      } catch (error) {
+        console.log(error);
       }
-      // const token = response.data.data.token;
-      // localStorage.setItem('token', token);
+    } else if (opType.value == 1) {
+      // 登录
+      try {
+        const response = await instance.post('/api/users/login', {
+          email: formData.value.email,
+          password: formData.value.password,
+        });
+        const status_code = response.data.status_code;
+        if (status_code === 5000) {
+          proxy.Message.success("登录成功");
+          const token = response.data.data.token;
+          const response2 = await instance.get('/api/users/info', {
+            headers: {
+              'X-Token': token,
+            },
+          });
+          const userInfo = {
+            nickName: response2.data.data.username,
+            email: response2.data.data.email,
+            is_banned: response2.data.data.is_banned,
+            is_admin: response2.data.data.is_admin,
+          };
+          proxy.VueCookies.set("userInfo", userInfo, 0);
 
-    })
-    .catch(function(error){
-      console.log(error);
-    })
 
-    }else if(opType.value == 2){
-      //重置密码
-      instance.post('/api/users/reset-password',{
-        email:formData.value.email,
-        password: formData.value.password
-    })
-    .then(function(response){
-      console.log(response);
-      proxy.Message.success("密码重置成功");
-      showPanel(1);
-    })
-    .catch(function(error){
-      console.log(error);
-    })
+          // 跳转页面
+          router.push("/");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else if (opType.value == 2) {
+      // 重置密码
+      try {
+        const response = await instance.post('/api/users/reset-password', {
+          email: formData.value.email,
+          password: formData.value.password,
+        });
+        console.log(response);
+        proxy.Message.success("密码重置成功");
+        showPanel(1);
+      } catch (error) {
+        console.log(error);
+      }
     }
-
   });
-  
 };
 
 

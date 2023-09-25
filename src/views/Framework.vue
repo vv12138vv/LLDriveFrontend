@@ -185,12 +185,8 @@ const uploadCallbackHandler = () => {
 
 const timestamp = ref(0);
 //获取用户信息
-const userInfo = ref({
-  nickName: "nihao",
-}
-
-
-// proxy.VueCookies.get("userInfo")
+const userInfo = ref(
+  proxy.VueCookies.get("userInfo")
 );
 const menus = [
   {
