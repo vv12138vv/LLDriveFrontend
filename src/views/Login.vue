@@ -271,13 +271,23 @@ const checkRePassword = (rule , value , callback)=>{
 
 
 //验证码验证
-const checkCheckCode = (rule , value , callback)=>{
-  if(value!==checkCodeRef.value.codeList.map(item => item.code).join('')){
+// const checkCheckCode = (rule , value , callback)=>{
+//   if(value!==checkCodeRef.value.codeList.map(item => item.code).join('')){
+//     callback(new Error(rule.message));
+//   }else{
+//     callback();
+//   }
+// }
+const checkCheckCode = (rule, value, callback) => {
+  const codeList = checkCodeRef.value.codeList;
+  const joinedCodes = codeList.map(item => item.code).join('').toLowerCase(); // 转换为小写
+
+  if (value.toLowerCase() !== joinedCodes) { // 将输入的验证码值也转换为小写进行比较
     callback(new Error(rule.message));
-  }else{
+  } else {
     callback();
   }
-}
+};
 
 
 const formData = ref({});
@@ -380,11 +390,11 @@ const doSubmit = ()=>{
     }
     if(opType.value == 0){
       //注册
-    axios.post('/api/users/register',{
-        username:formData.nickName,
-        password: formData.password,
-        email:formData.email,
-        code: formData.emailCode,
+    instance.post('/api/users/register',{
+        username:formData.value.nickName,
+        password: formData.value.password,
+        email:formData.value.email,
+        code: formData.value.emailCode,
     })
     .then(function(response){
       console.log(response);
@@ -398,15 +408,21 @@ const doSubmit = ()=>{
 
     }else if(opType.value == 1){
       //登录
-    axios.post('/api/users/login',{
-        email:formData.email,
-        password: formData.password
+    instance.post('/api/users/login',{
+        email:formData.value.email,
+        password: formData.value.password
     })
     .then(function(response){
-      console.log(response);
-      proxy.Message.success("登录成功");
-      //跳转页面
-      router.push("/");
+      // console.log(response);
+      const status_code=response.data.status_code;
+      if(status_code===5000){
+        proxy.Message.success("登录成功");
+        // 跳转页面
+        router.push("/");
+      }
+      // const token = response.data.data.token;
+      // localStorage.setItem('token', token);
+
     })
     .catch(function(error){
       console.log(error);
@@ -414,9 +430,9 @@ const doSubmit = ()=>{
 
     }else if(opType.value == 2){
       //重置密码
-      axios.post('/api/users/reset-password',{
-        email:formData.email,
-        password: formData.password
+      instance.post('/api/users/reset-password',{
+        email:formData.value.email,
+        password: formData.value.password
     })
     .then(function(response){
       console.log(response);
