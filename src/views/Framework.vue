@@ -61,7 +61,7 @@
           <template v-for="item in menus">
             <!-- 下面div的第一行有 v-if="item.allShow || (!item.allShow && userInfo.admin)" -->
             <div
-              
+            v-if="item.allShow || (!item.allShow && userInfo.admin)"
               @click="jump(item)"
               :class="[
                 'menu-item',
@@ -269,22 +269,22 @@ const menus = [
   {
     path: "/settings/fileList",
     icon: "settings",
-    name: "设置",
+    name: "管理",
     menuCode: "settings",
     allShow: false,
     children: [
       {
-        name: "用户文件",
+        name: "文件管理",
         path: "/settings/fileList",
       },
       {
         name: "用户管理",
         path: "/settings/userList",
       },
-      {
-        path: "/settings/sysSetting",
-        name: "系统设置",
-      },
+      // {
+      //   path: "/settings/sysSetting",
+      //   name: "系统设置",
+      // },
     ],
   },
 ];

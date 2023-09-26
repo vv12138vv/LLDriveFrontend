@@ -534,7 +534,7 @@ const doSubmit = async () => {
             nickName: response2.data.data.username,
             email: response2.data.data.email,
             is_banned: response2.data.data.is_banned,
-            is_admin: response2.data.data.is_admin,
+            admin: response2.data.data.is_admin,
           };
           proxy.VueCookies.set("userInfo", userInfo, 0);
           // 跳转页面

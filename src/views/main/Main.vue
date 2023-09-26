@@ -260,26 +260,26 @@ const showLoading = ref(true);
 const category = ref();
 
 const loadDataList = async () => {
-  // let params = {
-  //   pageNo: tableData.value.pageNo,
-  //   pageSize: tableData.value.pageSize,
-  //   fileNameFuzzy: fileNameFuzzy.value,
-  //   category: category.value,
-  //   filePid: currentFolder.value.fileId,
-  // };
-  // if (params.category !== "all") {
-  //   delete params.filePid;
-  // }
-  // let result = await proxy.Request({
-  //   url: api.loadDataList,
-  //   showLoading: showLoading,
-  //   params,
-  // });
-  // if (!result) {
-  //   return;
-  // }
-  // tableData.value = result.data;
-  // editing.value = false;
+  let params = {
+    pageNo: tableData.value.pageNo,
+    pageSize: tableData.value.pageSize,
+    fileNameFuzzy: fileNameFuzzy.value,
+    category: category.value,
+    filePid: currentFolder.value.fileId,
+  };
+  if (params.category !== "all") {
+    delete params.filePid;
+  }
+  let result = await proxy.Request({//api
+    url: api.loadDataList,
+    showLoading: showLoading,
+    params,
+  });
+  if (!result) {
+    return;
+  }
+  tableData.value = result.data;
+  editing.value = false;
 };
 
 //展示操作按钮
@@ -338,7 +338,7 @@ const saveNameEdit = async (index) => {
   if (fileId == "") {
     url = api.newFoloder;
   }
-  let result = await proxy.Request({
+  let result = await proxy.Request({//api
     url: url,
     params: {
       fileId,
@@ -400,7 +400,7 @@ const delFile = (row) => {
   proxy.Confirm(
     `你确定要删除【${row.fileName}】吗？删除的文件可在10天内通过回收站还原`,
     async () => {
-      let result = await proxy.Request({
+      let result = await proxy.Request({//api
         url: api.delFile,
         params: {
           fileIds: row.fileId,
@@ -421,7 +421,7 @@ const delFileBatch = () => {
   proxy.Confirm(
     `你确定要删除这些文件吗？删除的文件可在10天内通过回收站还原`,
     async () => {
-      let result = await proxy.Request({
+      let result = await proxy.Request({//api
         url: api.delFile,
         params: {
           fileIds: selectFileIdList.value.join(","),
@@ -510,7 +510,7 @@ const navChange = (data) => {
 
 //下载文件
 const download = async (row) => {
-  let result = await proxy.Request({
+  let result = await proxy.Request({//下载文件
     url: api.createDownloadUrl + "/" + row.fileId,
   });
   if (!result) {
