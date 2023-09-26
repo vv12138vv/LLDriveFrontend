@@ -50,6 +50,11 @@
 <script setup>
 import { ref, reactive, getCurrentInstance, nextTick } from "vue"
 const { proxy } = getCurrentInstance();
+import axios from 'axios';
+
+const instance = axios.create({
+  baseURL: "http://localhost:8848"
+})
 
 // const api = {
 //   updatePassword: "updatePassword",
@@ -104,7 +109,9 @@ const show =()=>{
 
 defineExpose({show});
 
-
+const userInfo = ref(
+  proxy.VueCookies.get("userInfo")
+);
 
 
 const submitForm = async()=>{
@@ -113,22 +120,23 @@ const submitForm = async()=>{
       return;
     }
     try {
-        const response = await instance.post('/api/users/register', {
-          username: formData.value.nickName,
-          password: formData.value.registerPassword,
-          email: formData.value.email,
-          code: formData.value.emailCode,
+        const response = await instance.post('/api/users/change-password', {
+          password: formData.value.oriPassword,
+          email: userInfo.value.email,
         });
         console.log(response);
         const status_code = response.data.status_code;
-        if(status_code === 5000){
-          proxy.Message.success("注册成功");
-          showPanel(1);
-        }else if(status_code === 4001){
-          proxy.Message.error("邮箱已存在，注册失败");
+        if(status_code == proxy.Status.incorrect_password){
+          proxy.Message.error("原始密码错误，修改失败");
         }
-        else if(status_code == 4006){
-          proxy.Message.error("邮箱验证码错误");
+        else if(status_code == proxy.Status.success){
+          const response2 = await instance.post('/api/users/set-new-password',{
+            email: userInfo.value.email,
+            new_password: formData.value.newPassword,
+          })
+          console.log(response2);
+          proxy.Message.success("密码修改成功");
+          dialogConfig.value.show = false;
         }
       } catch (error) {
         console.log(error);

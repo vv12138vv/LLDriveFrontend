@@ -8,12 +8,7 @@
 
         <!--输入电子邮箱-->
         <el-form-item prop="email">
-          <el-input 
-          size="large" 
-          clearable 
-          placeholder="请输入电子邮箱地址" 
-          v-model="formData.email" 
-          maxLength="150">
+          <el-input size="large" clearable placeholder="请输入电子邮箱地址" v-model="formData.email" maxLength="150">
             <template #prefix>
               <el-icon>
                 <User />
@@ -24,13 +19,8 @@
 
         <!--输入登录密码-->
         <el-form-item label="" prop="password" v-if="opType == 1">
-          <el-input 
-          size="large" 
-          type="password" 
-          clearable placeholder="请输入密码" 
-          v-model.trim="formData.password" 
-          maxLength="150"
-            show-password>
+          <el-input size="large" type="password" clearable placeholder="请输入密码" v-model.trim="formData.password"
+            maxLength="150" show-password>
             <template #prefix>
               <el-icon>
                 <Lock />
@@ -40,24 +30,22 @@
         </el-form-item>
 
 
-          <!-- 注册或者重置密码时 -->
+        <!-- 注册或者重置密码时 -->
         <div v-if="opType == 0 || opType == 2">
           <!--邮箱验证码-->
           <el-form-item label="" prop="emailCode">
             <div class="send-email-panel">
-              <el-input 
-              size="large" 
-              placeholder="请输入电子邮箱验证码" 
-              v-model.trim="formData.emailCode"
-              >
+              <el-input size="large" placeholder="请输入电子邮箱验证码" v-model.trim="formData.emailCode">
                 <template #prefix>
-                  <el-icon><CircleCheck /></el-icon>
+                  <el-icon>
+                    <CircleCheck />
+                  </el-icon>
                 </template>
               </el-input>
-              <el-button class="send-mail-btn" type="primary" size="large" v-if="opType==0" round @click="sendEmailCode0">
+              <el-button class="send-mail-btn" type="primary" size="large" v-if="opType == 0" round @click="sendEmailCode0">
                 获取验证码
               </el-button>
-              <el-button class="send-mail-btn" type="primary" size="large" v-if="opType==2" round @click="sendEmailCode2">
+              <el-button class="send-mail-btn" type="primary" size="large" v-if="opType == 2" round @click="sendEmailCode2">
                 获取验证码
               </el-button>
             </div>
@@ -79,45 +67,36 @@
           </el-form-item>
 
           <!-- 昵称 -->
-            <el-form-item label="" prop="nickName" v-if="opType == 0" >
-              <el-input  
-              size="large"
-              placeholder="请输入昵称" 
-              v-model.trim="formData.nickName"
-              maxLength="20"
-              >
-                <template #prefix>
-                  <el-icon><User /></el-icon>
-                </template>
-              </el-input>
-            </el-form-item>
-
-
-        <!--注册密码、找回密码-->
-          <el-form-item  prop="registerPassword" >
-            <el-input 
-            type="password"
-            size="large"
-            placeholder="请输入密码"
-            v-model.trim="formData.registerPassword"
-            show-password
-            >
+          <el-form-item label="" prop="nickName" v-if="opType == 0">
+            <el-input size="large" placeholder="请输入昵称" v-model.trim="formData.nickName" maxLength="20">
               <template #prefix>
-                <el-icon><Lock /></el-icon>
+                <el-icon>
+                  <User />
+                </el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+
+
+          <!--注册密码、找回密码-->
+          <el-form-item prop="registerPassword">
+            <el-input type="password" size="large" placeholder="请输入密码" v-model.trim="formData.registerPassword"
+              show-password>
+              <template #prefix>
+                <el-icon>
+                  <Lock />
+                </el-icon>
               </template>
             </el-input>
           </el-form-item>
           <!-- 重复密码 -->
-          <el-form-item  prop="reRegisterPassword" >
-            <el-input 
-            type="password" 
-            size="large"
-            placeholder="请确认密码"
-            v-model.trim="formData.reRegisterPassword"
-            show-password
-            >
+          <el-form-item prop="reRegisterPassword">
+            <el-input type="password" size="large" placeholder="请确认密码" v-model.trim="formData.reRegisterPassword"
+              show-password>
               <template #prefix>
-                <el-icon><Lock /></el-icon>
+                <el-icon>
+                  <Lock />
+                </el-icon>
               </template>
             </el-input>
           </el-form-item>
@@ -129,11 +108,8 @@
         <!--输入验证码-->
         <el-form-item prop="checkCode">
           <div class="check-code-panel">
-            <el-input size="large" 
-            clearable placeholder="请输入验证码" 
-            v-model.trim="formData.checkCode"
-            @keyup.enter="doSubmit"
-            >
+            <el-input size="large" clearable placeholder="请输入验证码" v-model.trim="formData.checkCode"
+              @keyup.enter="doSubmit">
               <template #prefix>
                 <el-icon>
                   <CircleCheck />
@@ -148,7 +124,7 @@
         </el-form-item>
 
         <!-- 登录 -->
-        <el-form-item  v-if="opType == 1">
+        <el-form-item v-if="opType == 1">
           <div class="rememberme-panel">
             <el-checkbox v-model="formData.remenberMe">记住我</el-checkbox>
           </div>
@@ -161,31 +137,31 @@
         </el-form-item>
 
         <!-- 找回密码 -->
-        <el-form-item  v-if="opType == 2">
-            <a href="javascript:void(0)" class="a-link" @click="showPanel(1)">
-              去登录</a>
+        <el-form-item v-if="opType == 2">
+          <a href="javascript:void(0)" class="a-link" @click="showPanel(1)">
+            去登录</a>
         </el-form-item>
 
 
-        <el-form-item  v-if="opType == 0">
-            <a href="javascript:void(0)" class="a-link" @click="showPanel(1)">
-              已有账号</a>
+        <el-form-item v-if="opType == 0">
+          <a href="javascript:void(0)" class="a-link" @click="showPanel(1)">
+            已有账号</a>
         </el-form-item>
 
 
 
         <!--登录按钮-->
         <el-form-item label="" prop="">
-          <el-button type="primary" class="op-btn" size="large" round  @click="doSubmit">
-            <span  v-if="opType == 0">注册</span>
-            <span  v-if="opType == 1">登录</span>
-            <span  v-if="opType == 2">重置密码</span>
+          <el-button type="primary" class="op-btn" size="large" round @click="doSubmit">
+            <span v-if="opType == 0">注册</span>
+            <span v-if="opType == 1">登录</span>
+            <span v-if="opType == 2">重置密码</span>
           </el-button>
         </el-form-item>
 
       </el-form>
     </div>
-    
+
     <!-- <Dialog
       :show="dialogConfig4SendMailCode.show"
       :title="dialogConfig4SendMailCode.title"
@@ -234,7 +210,7 @@
 
 <script setup>
 
-import { useRouter ,useRoute} from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import md5 from "js-md5";
 import axios from 'axios';
 
@@ -247,7 +223,7 @@ const { proxy } = getCurrentInstance();
 
 import checkCode from "../components/checkCode.vue";
 
-const instance=axios.create({
+const instance = axios.create({
   baseURL: "http://localhost:8848"
 })
 //import { pa } from "element-plus/es/locale";
@@ -256,7 +232,7 @@ const instance=axios.create({
 // const api = {
 //   // checkCode: ""//api地址
 //   sendEmailCode: "/api/users/register",
-  
+
 //   register: "/register",
 //   login: "/login",
 //   resetPwd: "/resetPwd",
@@ -264,10 +240,10 @@ const instance=axios.create({
 // }
 
 //检查确认密码是否与上一次输入密码一致
-const checkRePassword = (rule , value , callback)=>{
-  if(value!==formData.value.registerPassword){
+const checkRePassword = (rule, value, callback) => {
+  if (value !== formData.value.registerPassword) {
     callback(new Error(rule.message));
-  }else{
+  } else {
     callback();
   }
 }
@@ -297,21 +273,21 @@ const formData = ref({});
 const formDataRef = ref(formData.value);
 const rules = {
   // title: [{ required: true, message: "请输入内容" }],
-  email: [{ required: true, message : "请输入邮箱"},
-  { validator: proxy.Verify.email , message:"请输入正确的邮箱"},
-],
-  password: [{ required: true, message : "请输入密码"}],
-  emailCode: [{ required: true, message : "请输入邮箱验证码"}],
-  nickName: [{ required: true, message : "请输入用户名"}],
-  registerPassword: [{ required: true, message : "请输入密码"},
-  { validator: proxy.Verify.password , message:"密码只能是数字、字母、特殊字符,8-18位"},
-],
-  reRegisterPassword: [{ required: true, message : "请再次输入密码"},
-  { validator: checkRePassword , message:"与前一次密码不一致"},
-],
+  email: [{ required: true, message: "请输入邮箱" },
+  { validator: proxy.Verify.email, message: "请输入正确的邮箱" },
+  ],
+  password: [{ required: true, message: "请输入密码" }],
+  emailCode: [{ required: true, message: "请输入邮箱验证码" }],
+  nickName: [{ required: true, message: "请输入用户名" }],
+  registerPassword: [{ required: true, message: "请输入密码" },
+  { validator: proxy.Verify.password, message: "密码只能是数字、字母、特殊字符,8-18位" },
+  ],
+  reRegisterPassword: [{ required: true, message: "请再次输入密码" },
+  { validator: checkRePassword, message: "与前一次密码不一致" },
+  ],
 
-  checkCode: [{ required: true, message : "请输入验证码"},
-  { validator: checkCheckCode , message:"验证码错误"}],
+  checkCode: [{ required: true, message: "请输入验证码" },
+  { validator: checkCheckCode, message: "验证码错误" }],
 };
 
 
@@ -320,7 +296,7 @@ const rules = {
 const opType = ref(1); //一开始默认登录界面
 const showPanel = (type) => {
   opType.value = type;
-  restForm();
+  resetForm();
 }
 
 onMounted(() => {
@@ -339,57 +315,57 @@ components: {
 
 
 //发送邮箱验证码(注册)
-const sendEmailCode0 = ()=>{
-  formDataRef.value.validateField("email", async (valid)=>{
-    if(!valid){
+const sendEmailCode0 = () => {
+  formDataRef.value.validateField("email", async (valid) => {
+    if (!valid) {
       return;
     }
-    instance.get('/api/users/register',{
-      params:{
+    instance.get('/api/users/register', {
+      params: {
         // email:formData.email
-        email:formData.value.email
+        email: formData.value.email
       }
     })
-    .then(function(response){
-      console.log(response);
-      const status_code = response.data.status_code;
-      if(status_code === 4001){
+      .then(function (response) {
+        console.log(response);
+        const status_code = response.data.status_code;
+        if (status_code === proxy.Status.email_exist) {
           proxy.Message.error("邮箱已存在，注册失败");
         }
-        else{
-        proxy.Message.success("验证码发送成功");
+        else {
+          proxy.Message.success("验证码发送成功");
+        }
       }
-    }
-    )
-    .catch(function(error){
-      console.log(error);
-    })
+      )
+      .catch(function (error) {
+        console.log(error);
+      })
   });
 }
 
 
 //发送邮箱验证码(重置密码)
-const sendEmailCode2 = ()=>{
-  formDataRef.value.validateField("email", async (valid)=>{
-    if(!valid){
+const sendEmailCode2 = () => {
+  formDataRef.value.validateField("email", async (valid) => {
+    if (!valid) {
       return;
     }
-    instance.get('/api/users/reset-password',{
-      params:{
+    instance.get('/api/users/reset-password', {
+      params: {
         // email:formData.email
-        email:formData.value.email
+        email: formData.value.email
       }
     })
-    .then(function(response){
-      console.log(response);
-      // const status_code = response.data.status_code;
-      
+      .then(function (response) {
+        console.log(response);
+        // const status_code = response.data.status_code;
+
         proxy.Message.success("验证码发送成功");
-    }
-    )
-    .catch(function(error){
-      console.log(error);
-    })
+      }
+      )
+      .catch(function (error) {
+        console.log(error);
+      })
   });
 }
 
@@ -398,21 +374,21 @@ const sendEmailCode2 = ()=>{
 
 
 //验证码引用
-const checkCodeRef=ref();
+const checkCodeRef = ref();
 
 //重置表单
-const restForm = ()=>{
+const resetForm = () => {
   //刷新验证码
-  if(checkCodeRef.value){
+  if (checkCodeRef.value) {
     checkCodeRef.value.refreshCode();
   }
   //重置表单
   formDataRef.value.resetFields();
   formData.value = {};
   //登录情况下
-  if(opType.value == 1){
+  if (opType.value == 1) {
     const cookieLoginInfo = proxy.VueCookies.get("loginInfo");
-    if(cookieLoginInfo){
+    if (cookieLoginInfo) {
       formData.value = cookieLoginInfo;
     }
   }
@@ -497,7 +473,7 @@ const restForm = ()=>{
 //     }
 
 //   });
-  
+
 // };
 
 const doSubmit = async () => {
@@ -516,13 +492,13 @@ const doSubmit = async () => {
         });
         console.log(response);
         const status_code = response.data.status_code;
-        if(status_code === 5000){
+        if (status_code === proxy.Status.success) {
           proxy.Message.success("注册成功");
           showPanel(1);
-        }else if(status_code === 4001){
+        } else if (status_code === proxy.Status.email_exist) {
           proxy.Message.error("邮箱已存在，注册失败");
         }
-        else if(status_code == 4006){
+        else if (status_code == proxy.Status.incorrect_code) {
           proxy.Message.error("邮箱验证码错误");
         }
       } catch (error) {
@@ -537,62 +513,69 @@ const doSubmit = async () => {
         });
         console.log(response);
         const status_code = response.data.status_code;
-        if (status_code === proxy.Status.success) {
-          proxy.Message.success("登录成功");
+        if (status_code == proxy.Status.success) {
           const token = response.data.data.token;
           const response2 = await instance.get('/api/users/info', {
             headers: {
               'X-Token': token,
             },
           });
+          const is_banned = response2.data.data.is_banned;
+          if (is_banned == true) {
+            proxy.Message.error("您已被禁用，无法登录");
+            resetForm();
+            return;
+          }
+          proxy.Message.success("登录成功");
           const userInfo = {
+            cur_capacity: response2.data.data.cur_capacity,
+            max_capacity: response2.data.data.max_capacity,
+            token: token,
             nickName: response2.data.data.username,
             email: response2.data.data.email,
             is_banned: response2.data.data.is_banned,
             is_admin: response2.data.data.is_admin,
           };
           proxy.VueCookies.set("userInfo", userInfo, 0);
-
-
           // 跳转页面
           router.push("/");
-        }
-        else if(status_code == 4004){
+        } else if(status_code == proxy.Status.incorrect_password){
           proxy.Message.error("密码错误");
         }
-      } catch (error) {
-        console.log(error);
-      }
-    } else if (opType.value == 2) {
-      // 重置密码
-      try {
-        const response = await instance.post('/api/users/reset-password', {
-          email: formData.value.email,
-          // password: formData.value.registerPassword,
-          code: formData.value.emailCode,
-        });
-        console.log(response);
-        const status_code = response.data.status_code;
-        if(status_code == 4006){
-          proxy.Message.error("邮箱验证码错误");
-        }else if(status_code == 5000){
-          const response2 = await instance.post('/api/users/set-new-password', {
+
+      }catch (error) {
+      console.log(error);
+    }
+  } else if (opType.value == 2) {
+    // 重置密码
+    try {
+      const response = await instance.post('/api/users/reset-password', {
+        email: formData.value.email,
+        // password: formData.value.registerPassword,
+        code: formData.value.emailCode,
+      });
+      console.log(response);
+      const status_code = response.data.status_code;
+      if (status_code == proxy.Status.incorrect_code) {
+        proxy.Message.error("邮箱验证码错误");
+      } else if (status_code == proxy.Status.success) {
+        const response2 = await instance.post('/api/users/set-new-password', {
           email: formData.value.email,
           new_password: formData.value.registerPassword,
         });
         console.log(response2);
         proxy.Message.success("密码重置成功");
         showPanel(1);
-        }
-        
-
-
-
-      } catch (error) {
-        console.log(error);
       }
+
+
+
+
+    } catch (error) {
+      console.log(error);
     }
-  });
+  }
+});
 };
 
 

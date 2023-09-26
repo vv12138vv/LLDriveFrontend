@@ -260,26 +260,26 @@ const showLoading = ref(true);
 const category = ref();
 
 const loadDataList = async () => {
-  let params = {
-    pageNo: tableData.value.pageNo,
-    pageSize: tableData.value.pageSize,
-    fileNameFuzzy: fileNameFuzzy.value,
-    category: category.value,
-    filePid: currentFolder.value.fileId,
-  };
-  if (params.category !== "all") {
-    delete params.filePid;
-  }
-  let result = await proxy.Request({
-    url: api.loadDataList,
-    showLoading: showLoading,
-    params,
-  });
-  if (!result) {
-    return;
-  }
-  tableData.value = result.data;
-  editing.value = false;
+  // let params = {
+  //   pageNo: tableData.value.pageNo,
+  //   pageSize: tableData.value.pageSize,
+  //   fileNameFuzzy: fileNameFuzzy.value,
+  //   category: category.value,
+  //   filePid: currentFolder.value.fileId,
+  // };
+  // if (params.category !== "all") {
+  //   delete params.filePid;
+  // }
+  // let result = await proxy.Request({
+  //   url: api.loadDataList,
+  //   showLoading: showLoading,
+  //   params,
+  // });
+  // if (!result) {
+  //   return;
+  // }
+  // tableData.value = result.data;
+  // editing.value = false;
 };
 
 //展示操作按钮
