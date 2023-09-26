@@ -56,12 +56,12 @@
 
 
     <!-- 这下面的 initFetch 最后要改为 false -->
-    <div class="file-list" v-if="tableData.list && tableData.list.length > 0">
+    <div class="file-list" v-if="tableData && tableData.length > 0">
       <Table
         ref="dataTableRef"
         :columns="columns"
         :showPagination="true"
-        :dataSource="tableData"
+        :dataSource="tableData.value"
         :fetch="loadDataList"
         :initFetch="false"
         :options="tableOptions"
@@ -187,10 +187,21 @@ import CategoryInfo from "@/js/CategoryInfo.js";
 import FileShare from "./ShareFile.vue";
 import { ref, reactive, getCurrentInstance, nextTick, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import axios from 'axios';
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const route = useRoute();
 const emit = defineEmits(["addFile"]);
+
+const instance = axios.create({
+  baseURL: 'http://localhost:8848'
+});
+
+const currentFolder = ref({user_file_id: ""});
+
+const userInfo = ref(
+  proxy.VueCookies.get("userInfo")
+);
 //添加文件
 const addFile = async (fileData) => {
   emit("addFile", { file: fileData.file, filePid: currentFolder.value.fileId });
@@ -206,18 +217,17 @@ defineExpose({
   reload,
 });
 
-const currentFolder = ref({ fileId: 0 });
 
-const api = {
-  loadDataList: "/file/loadDataList",
-  rename: "/file/rename",
-  newFoloder: "/file/newFoloder",
-  getFolderInfo: "/file/getFolderInfo",
-  delFile: "/file/delFile",
-  changeFileFolder: "/file/changeFileFolder",
-  createDownloadUrl: "/file/createDownloadUrl",
-  download: "/api/file/download",
-};
+// const api = {
+//   loadDataList: "/file/loadDataList",
+//   rename: "/file/rename",
+//   newFoloder: "/file/newFoloder",
+//   getFolderInfo: "/file/getFolderInfo",
+//   delFile: "/file/delFile",
+//   changeFileFolder: "/file/changeFileFolder",
+//   createDownloadUrl: "/file/createDownloadUrl",
+//   download: "/api/file/download",
+// };
 
 const fileAccept = computed(() => {
   const categoryItem = CategoryInfo[category.value];
@@ -259,29 +269,64 @@ const fileNameFuzzy = ref();
 const showLoading = ref(true);
 const category = ref();
 
+// const loadDataList = async () => {
+//   console.log("main.vue: call loadDataList");
+//   let params = {
+//     pageNo: tableData.value.pageNo,
+//     pageSize: tableData.value.pageSize,
+//     fileNameFuzzy: fileNameFuzzy.value,
+//     category: category.value,
+//     filePid: currentFolder.value.fileId,
+//   };
+//   if (params.category !== "all") {
+//     delete params.filePid;
+//   }
+//   let result = await proxy.Request({//api
+//     url: api.loadDataList,
+//     showLoading: showLoading,
+//     params,
+//   });
+//   if (!result) {
+//     return;
+//   }
+//   tableData.value = result.data;
+//   editing.value = false;
+// };
 const loadDataList = async () => {
   console.log("main.vue: call loadDataList");
-  let params = {
-    pageNo: tableData.value.pageNo,
-    pageSize: tableData.value.pageSize,
-    fileNameFuzzy: fileNameFuzzy.value,
-    category: category.value,
-    filePid: currentFolder.value.fileId,
-  };
-  if (params.category !== "all") {
-    delete params.filePid;
+  // let params = {
+  //   username: userInfo.value.username,
+  //   dir_id: currentFolder.value.user_file_id,
+  // };
+  // if (params.category !== "all") {
+  //   delete params.filePid;
+  // }
+  // let result = await proxy.Request({//api
+  //   url: api.loadDataList,
+  //   showLoading: showLoading,
+  //   params,
+  // });
+  console.log(currentFolder.value.user_file_id);
+  try{
+    let response = await instance.get('/api/files/list',{
+      params: {
+        username: userInfo.value.nickName,
+        dir_id: "",
+        type: ""
+      }
+    })
+    if(response.data.status_code==proxy.Status.success){
+      tableData.value = response.data;
+      console.log(tableData.value.data);
+    }
+  }catch(error){
+    console.log(error);
   }
-  let result = await proxy.Request({//api
-    url: api.loadDataList,
-    showLoading: showLoading,
-    params,
-  });
-  if (!result) {
-    return;
-  }
-  tableData.value = result.data;
-  editing.value = false;
+
+  // editing.value = false;
 };
+
+
 
 //展示操作按钮
 const showOp = (row) => {
@@ -510,10 +555,23 @@ const navChange = (data) => {
 };
 
 //下载文件
+// const download = async (row) => {
+//   let result = await proxy.Request({//下载文件
+//     url: api.createDownloadUrl + "/" + row.fileId,
+//   });
+//   if (!result) {
+//     return;
+//   }
+//   window.location.href = api.download + "/" + result.data;
+// };
+
 const download = async (row) => {
-  let result = await proxy.Request({//下载文件
-    url: api.createDownloadUrl + "/" + row.fileId,
-  });
+  // let result = await proxy.Request({//下载文件
+  //   url: api.createDownloadUrl + "/" + row.fileId,
+  // });
+  let result = await proxy.get('/api/transfers/download',{
+    user_file_id: row.user_file_id
+  })
   if (!result) {
     return;
   }

@@ -70,11 +70,15 @@ import { useRouter, useRoute } from "vue-router";
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const route = useRoute();
+import axios from 'axios';
+const instance = axios.create({
+  baseURL: "http://localhost:8848"
+})
 
-const api = {
-  loadDataList: "/share/loadShareList",
-  cancelShare: "/share/cancelShare",
-};
+// const api = {
+//   loadDataList: "/share/loadShareList",
+//   cancelShare: "/share/cancelShare",
+// };
 
 const shareUrl = ref(document.location.origin + "/share/");
 
@@ -114,6 +118,24 @@ const tableOptions = {
   selectType: "checkbox",
 };
 
+// const loadDataList = async () => {
+//   console.log('loadDataList called');
+//   let params = {
+//     pageNo: tableData.value.pageNo,
+//     pageSize: tableData.value.pageSize,
+//   };
+//   if (params.category !== "all") {
+//     delete params.filePid;
+//   }
+//   let result = await proxy.Request({
+//     url: api.loadDataList,
+//     params,
+//   });
+//   if (!result) {
+//     return;
+//   }
+//   tableData.value = result.data;
+// };
 const loadDataList = async () => {
   console.log('loadDataList called');
   let params = {
@@ -123,14 +145,17 @@ const loadDataList = async () => {
   if (params.category !== "all") {
     delete params.filePid;
   }
-  let result = await proxy.Request({
-    url: api.loadDataList,
-    params,
-  });
-  if (!result) {
-    return;
+  // let result = await proxy.Request({
+  //   url: api.loadDataList,
+  //   params,
+  // });
+  try {
+    let response = await instance.get('/api/share/list');
+    tableData.value = response.data.data;
+  } catch (error) {
+    console.log(error);
   }
-  tableData.value = result.data;
+  console.log(tableData.value);
 };
 
 //展示操作按钮

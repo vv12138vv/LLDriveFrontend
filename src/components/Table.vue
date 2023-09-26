@@ -2,7 +2,7 @@
   <div>
     <el-table
       ref="dataTable"
-      :data="dataSource.list || []"
+      :data="datasource.data"
       :height="tableHeight"
       :stripe="options.stripe"
       :border="options.border"
@@ -76,6 +76,7 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, computed } from "vue";
 
