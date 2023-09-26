@@ -247,7 +247,7 @@
       let start = i * chunkSize;
       let end = start + chunkSize >= fileSize ? fileSize : start + chunkSize;
       let chunkFile = file.slice(start, end);
-      let uploadResult = await proxy.Request({
+      let uploadResult = await proxy.Request({//调用api接口处
         url: api.upload,
         showLoading: false,
         dataType: "file",
