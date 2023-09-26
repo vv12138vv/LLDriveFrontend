@@ -539,8 +539,17 @@ const doSubmit = async () => {
           proxy.VueCookies.set("userInfo", userInfo, 0);
           // 跳转页面
           router.push("/");
-        } else if(status_code == proxy.Status.incorrect_password){
-          proxy.Message.error("密码错误");
+        } else {
+            if(status_code == proxy.Status.incorrect_password){
+              proxy.Message.error("密码错误");
+              resetForm();
+              return;
+            }
+            if(status_code==proxy.Status.email_not_exist){
+              proxy.Message.error("该邮箱不存在");
+              resetForm();
+              return;
+            }
         }
 
       }catch (error) {
