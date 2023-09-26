@@ -351,20 +351,17 @@ const logout = () => {
 };
 
 //使用空间
-const useSpaceInfo = ref({ useSpace: 0, totalSpace: 1 });
-const getUseSpace = async()=>{
-  // console.log("test1:"+userInfo.value.token);
-  // console.log("test2:"+userInfo.token);
-
-  const response2 = await instance.get('/api/users/info', {
-            headers: {
-              'X-Token': userInfo.value.token,
-            },
-          });
-    useSpaceInfo.value.useSpace = response2.data.data.cur_capacity;
-    useSpaceInfo.value.totalSpace = response2.data.data.max_capacity;
-    console.log(useSpaceInfo);
-}
+const useSpaceInfo = ref({ useSpace: userInfo.value.cur_capacity, totalSpace: userInfo.value.max_capacity });
+// const getUseSpace = async()=>{
+//   const response2 = await instance.get('/api/users/info', {
+//             headers: {
+//               'X-Token': userInfo.value.token,
+//             },
+//           });
+//     useSpaceInfo.value.useSpace = response2.data.data.cur_capacity;
+//     useSpaceInfo.value.totalSpace = response2.data.data.max_capacity;
+//     console.log(useSpaceInfo);
+// }
 // const getUseSpace = async () => {
 //   let result = await proxy.Request({
 //     url: api.getUseSpace,
@@ -375,7 +372,7 @@ const getUseSpace = async()=>{
 //   }
 //   useSpaceInfo.value = result.data;
 // };
-getUseSpace();
+// getUseSpace();
 </script>
 
 <style lang="scss" scoped>

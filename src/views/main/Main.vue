@@ -260,6 +260,7 @@ const showLoading = ref(true);
 const category = ref();
 
 const loadDataList = async () => {
+  console.log("main.vue: call loadDataList");
   let params = {
     pageNo: tableData.value.pageNo,
     pageSize: tableData.value.pageSize,

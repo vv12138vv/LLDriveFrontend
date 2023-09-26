@@ -115,6 +115,7 @@ const tableOptions = {
 };
 
 const loadDataList = async () => {
+  console.log('loadDataList called');
   let params = {
     pageNo: tableData.value.pageNo,
     pageSize: tableData.value.pageSize,
