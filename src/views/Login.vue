@@ -213,7 +213,9 @@
 import { useRouter, useRoute } from "vue-router";
 import md5 from "js-md5";
 import axios from 'axios';
-
+const instance = axios.create({
+  baseURL: "http://localhost:8848"
+})
 
 const router = useRouter();
 const route = useRoute();
@@ -223,9 +225,7 @@ const { proxy } = getCurrentInstance();
 
 import checkCode from "../components/checkCode.vue";
 
-const instance = axios.create({
-  baseURL: "http://localhost:8848"
-})
+
 //import { pa } from "element-plus/es/locale";
 
 

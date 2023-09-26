@@ -119,8 +119,17 @@
     nextTick,
   } from "vue";
   import SparkMD5 from "spark-md5";
+  import axios from 'axios';
+  const instance = axios.create({
+  baseURL: "http://localhost:8848"
+  })
   const { proxy } = getCurrentInstance();
   
+
+  const userInfo = ref(
+  proxy.VueCookies.get("userInfo")
+);
+
   const api = {
     upload: "/file/uploadFile",
   };
@@ -229,6 +238,8 @@
   };
   
   const emit = defineEmits(["uploadCallback"]);
+
+
   const uploadFile = async (uid, chunkIndex) => {
     chunkIndex = chunkIndex ? chunkIndex : 0;
     //分片上传
@@ -250,26 +261,26 @@
       let start = i * chunkSize;
       let end = start + chunkSize >= fileSize ? fileSize : start + chunkSize;
       let chunkFile = file.slice(start, end);
-      let uploadResult = await proxy.Request({//调用api接口处
-        url: api.upload,
-        showLoading: false,
-        dataType: "file",
-        params: {
-          file: chunkFile,
-          fileName: file.name,
-          fileMd5: currentFile.md5,
-          chunkIndex: i,
-          chunks: chunks,
-          fileId: currentFile.fileId,
-          filePid: currentFile.filePid,
+
+      let formData = new FormData();
+      formData.append('chunkFlag', 1);
+      formData.append('file', chunkFile);
+      formData.append('fileName', file.name);
+      formData.append('hash', currentFile.md5);
+      formData.append('chunkNumber', i);
+      formData.append('totalChunks', chunks);
+      formData.append('dir_id', currentFile.fileId);
+      //只上传文件，上传文件夹
+      formData.append('dir', 0);
+      formData.append('totalSize', fileSize);
+      formData.append('username', userInfo.value.nickName);
+
+      const uploadResult = await instance.post('/api/transfers/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // 设置请求头为 FormData 类型
         },
-        showError: false,
-        errorCallback: (errorMsg) => {
-          currentFile.status = STATUS.fail.value;
-          currentFile.errorMsg = errorMsg;
-        },
-        uploadProgressCallback: (event) => {
-          let loaded = event.loaded;
+        onUploadProgress: (progressEvent) => {
+          let loaded = progressEvent.loaded;
           if (loaded > fileSize) {
             loaded = fileSize;
           }
@@ -279,11 +290,42 @@
           );
         },
       });
+
+      // let uploadResult = await proxy.Request({//调用api接口处
+      //   url: api.upload,
+      //   showLoading: false,
+      //   dataType: "file",
+      //   params: {
+      //     file: chunkFile,
+      //     fileName: file.name,
+      //     fileMd5: currentFile.md5,
+      //     chunkIndex: i,
+      //     chunks: chunks,
+      //     fileId: currentFile.fileId,
+      //     filePid: currentFile.filePid,
+      //   },
+      //   showError: false,
+      //   errorCallback: (errorMsg) => {
+      //     currentFile.status = STATUS.fail.value;
+      //     currentFile.errorMsg = errorMsg;
+      //   },
+      //   uploadProgressCallback: (event) => {
+      //     let loaded = event.loaded;
+      //     if (loaded > fileSize) {
+      //       loaded = fileSize;
+      //     }
+      //     currentFile.uploadSize = i * chunkSize + loaded;
+      //     currentFile.uploadProgress = Math.floor(
+      //       (currentFile.uploadSize / fileSize) * 100
+      //     );
+      //   },
+      // });
       if (uploadResult == null) {
         break;
       }
-      currentFile.fileId = uploadResult.data.fileId;
-      currentFile.status = STATUS[uploadResult.data.status].value;
+      // currentFile.fileId = uploadResult.data.fileId;
+      
+      // currentFile.status = STATUS[uploadResult.data.status].value;
       currentFile.chunkIndex = i;
       if (
         uploadResult.data.status == STATUS.upload_seconds.value ||
