@@ -537,7 +537,7 @@ const doSubmit = async () => {
         });
         console.log(response);
         const status_code = response.data.status_code;
-        if (status_code === 5000) {
+        if (status_code === proxy.Status.success) {
           proxy.Message.success("登录成功");
           const token = response.data.data.token;
           const response2 = await instance.get('/api/users/info', {

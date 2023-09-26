@@ -41,7 +41,7 @@ import Message from '@/utils/Message'
 import Request from '@/utils/Request'
 import Confirm from '@/utils/Confirm'
 import Utils from '@/utils/Utils'
-
+import Status from '@/utils/Status-code'
 const app = createApp(App)
 
 
@@ -77,6 +77,7 @@ app.config.globalProperties.Request = Request;
 app.config.globalProperties.Confirm = Confirm;
 app.config.globalProperties.VueCookies = VueCookies;
 app.config.globalProperties.Utils = Utils;
+app.config.globalProperties.Status=Status;
 
 app.config.globalProperties.globalInfo = {
   avatarUrl: "/api/getAvatar/",
