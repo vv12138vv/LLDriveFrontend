@@ -61,7 +61,7 @@
           <template v-for="item in menus">
             <!-- 下面div的第一行有 v-if="item.allShow || (!item.allShow && userInfo.admin)" -->
             <div
-              v-if="item.allShow || (!item.allShow && userInfo.admin)"
+              
               @click="jump(item)"
               :class="[
                 'menu-item',
@@ -185,12 +185,8 @@ const uploadCallbackHandler = () => {
 
 const timestamp = ref(0);
 //获取用户信息
-const userInfo = ref({
-  nickName: "nihao",
-}
-
-
-// proxy.VueCookies.get("userInfo")
+const userInfo = ref(
+  proxy.VueCookies.get("userInfo")
 );
 const menus = [
   {
