@@ -461,7 +461,7 @@ const rowSelected = (rows) => {
   console.log("debug:"+selectFileList.value);
   selectFileIdList.value = [];
   rows.forEach((item) => {
-    selectFileIdList.value.push(item.fileId);
+    selectFileIdList.value.push(item.user_file_id);
   });
 };
 
