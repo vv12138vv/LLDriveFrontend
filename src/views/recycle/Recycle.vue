@@ -160,22 +160,30 @@ const revert = (row) => {
   });
 };
 
-const revertBatch = () => {
-  if (selectFileIdList.value.length == 0) {
+const revertBatch = async () => {
+  if (selectFileIdList.value.length === 0) {
     return;
   }
-  proxy.Confirm(`你确定要还原这些文件吗？`, async () => {
-    let result = await proxy.Request({
-      url: api.recoverFile,
-      params: {
-        fileIds: selectFileIdList.value.join(","),
-      },
-    });
-    if (!result) {
+  try {
+    const confirmed = window.confirm("你确定要还原这些文件吗？");
+    if (!confirmed) {
       return;
     }
+    for(const user_file_id of selectFileIdList.value){
+      const result = await instance.get('/api/files/recover',{
+        params: {
+          user_file_id: user_file_id,
+          username: userInfo.value.nickName
+        }
+      })
+      if (!result) {
+        return;
+      }
+    }
     loadDataList();
-  });
+  } catch (error) {
+    console.log(error);
+  }
 };
 //删除文件
 const emit = defineEmits(["reload"]);
