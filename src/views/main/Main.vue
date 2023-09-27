@@ -244,7 +244,7 @@ const columns = [
   {
     label: "文件名",
     prop: "file_name",
-    // scopedSlots: "file_name",
+    scopedSlots: "file_name",
   },
   {
     label: "修改时间",
@@ -254,7 +254,7 @@ const columns = [
   {
     label: "大小",
     prop: "size",
-    // scopedSlots: "file_size",
+    scopedSlots: "file_size",
     width: 200,
   },
 ];
@@ -299,19 +299,6 @@ const category = ref();
 // };
 const loadDataList = async () => {
   console.log("main.vue: call loadDataList");
-  // let params = {
-  //   username: userInfo.value.username,
-  //   dir_id: currentFolder.value.user_file_id,
-  // };
-  // if (params.category !== "all") {
-  //   delete params.filePid;
-  // }
-  // let result = await proxy.Request({//api
-  //   url: api.loadDataList,
-  //   showLoading: showLoading,
-  //   params,
-  // });
-  // console.log(currentFolder.value.user_file_id);
   try{
     let response = await instance.post('/api/files/list',{
       username: userInfo.value.nickName,
