@@ -3,13 +3,8 @@
     <div class="top">
       <div class="top-op">
         <div class="btn">
-          <el-upload
-            :show-file-list="false"
-            :with-credentials="true"
-            :multiple="true"
-            :http-request="addFile"
-            :accept="fileAccept"
-          >
+          <el-upload :show-file-list="false" :with-credentials="true" :multiple="true" :http-request="addFile"
+            :accept="fileAccept">
             <el-button type="primary">
               <!-- <span class="iconfont icon-upload"></span> -->
               上传
@@ -24,29 +19,16 @@
           <!-- <span class="iconfont icon-folder-add"></span> -->
           新建文件夹
         </el-button>
-        <el-button
-          @click="delFileBatch"
-          type="danger"
-          :disabled="selectFileIdList.length == 0"
-        >
+        <el-button @click="delFileBatch" type="danger" :disabled="selectFileIdList.length == 0">
           <!-- <span class="iconfont icon-del"></span> -->
           批量删除
         </el-button>
-        <el-button
-          @click="moveFolderBatch"
-          type="warning"
-          :disabled="selectFileIdList.length == 0"
-        >
+        <el-button @click="moveFolderBatch" type="warning" :disabled="selectFileIdList.length == 0">
           <!-- <span class="iconfont icon-move"></span> -->
           批量移动
         </el-button>
         <div class="search-panel">
-          <el-input
-            clearable
-            placeholder="输入文件名搜索"
-            v-model="fileNameFuzzy"
-            @keyup.enter="search"
-          >
+          <el-input clearable placeholder="输入文件名搜索" v-model="fileNameFuzzy" @keyup.enter="search">
             <template #suffix>
               <i class="iconfont icon-search" @click="search"></i>
             </template>
@@ -61,16 +43,8 @@
 
     <!-- 这下面的 initFetch 最后要改为 false -->
     <div class="file-list" v-if="tableData.list && tableData.list.length > 0">
-      <Table
-        ref="dataTableRef"
-        :columns="columns"
-        :showPagination="true"
-        :dataSource="tableData"
-        :fetch="loadDataList"
-        :initFetch="false"
-        :options="tableOptions"
-        @rowSelected="rowSelected"
-      >
+      <Table ref="dataTableRef" :columns="columns" :showPagination="true" :dataSource="tableData" :fetch="loadDataList"
+        :initFetch="false" :options="tableOptions" @rowSelected="rowSelected">
         <!-- <template #file_name="{ index, row }">
           <div
             class="file-item"
@@ -153,13 +127,8 @@
         <Icon iconName="no_data" :width="120" fit="fill"></Icon>
         <div class="tips">当前目录为空</div>
         <div class="op-list">
-          <el-upload
-            :show-file-list="false"
-            :with-credentials="true"
-            :multiple="true"
-            :http-request="addFile"
-            :accept="fileAccept"
-          >
+          <el-upload :show-file-list="false" :with-credentials="true" :multiple="true" :http-request="addFile"
+            :accept="fileAccept">
             <div class="op-item">
               <Icon iconName="file" :width="60"></Icon>
               <div>上传文件</div>
@@ -175,10 +144,7 @@
     <!--预览-->
     <Preview ref="previewRef"> </Preview>
     <!--移动-->
-    <FolderSelect
-      ref="folderSelectRef"
-      @folderSelect="moveFolderDone"
-    ></FolderSelect>
+    <FolderSelect ref="folderSelectRef" @folderSelect="moveFolderDone"></FolderSelect>
     <!--分享-->
     <FileShare ref="shareRef"></FileShare>
   </div>
@@ -199,7 +165,7 @@ const instance = axios.create({
   baseURL: 'http://localhost:8848'
 });
 
-const currentFolder = ref({user_file_id: ""});
+const currentFolder = ref({ user_file_id: "" });
 
 const userInfo = ref(
   proxy.VueCookies.get("userInfo")
@@ -261,7 +227,7 @@ const search = () => {
   loadDataList();
 };
 //列表
-const tableData = ref({page_no: 1,page_size: 15});
+const tableData = ref({ page_no: 1, page_size: 15 });
 const tableOptions = {
   extHeight: 50,
   selectType: "checkbox",
@@ -309,8 +275,8 @@ const loadDataList = async () => {
   //   params,
   // });
   // console.log(currentFolder.value.user_file_id);
-  try{
-    let response = await instance.post('/api/files/list',{
+  try {
+    let response = await instance.post('/api/files/list', {
       username: userInfo.value.nickName,
       dir_id: "",
       type: "",
@@ -319,12 +285,12 @@ const loadDataList = async () => {
       page_no: tableData.value.page_no,
       page_size: tableData.value.page_size
     })
-    if(response.data.status_code==proxy.Status.success){
+    if (response.data.status_code == proxy.Status.success) {
       tableData.value = response.data.data;
       // console.log(tableData.value.data);
       editing.value = false;
     }
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
 
@@ -439,7 +405,7 @@ const selectFileIdList = ref([]);
 const selectFileList = ref([]);
 const rowSelected = (rows) => {
   selectFileList.value = rows;
-  console.log("debug:"+selectFileList.value);
+  console.log("debug:" + selectFileList.value);
   selectFileIdList.value = [];
   rows.forEach((item) => {
     selectFileIdList.value.push(item.user_file_id);
@@ -490,24 +456,27 @@ const downloadFile = async () => {
   if (selectFileIdList.value.length === 0) {
     return;
   }
-  try {
-    const response = await instance.get('/api/transfers/download', {
-      params: {
-        user_file_id: selectFileIdList.value[0],
-      },
-      responseType: 'blob',
-    });
-    console.log(response);
-    const downloadLink = document.createElement('a');
-    const dispositionHeader = response.headers['content-disposition'];
-    const fileName = dispositionHeader
-      ? dispositionHeader.split('filename=')[1].replace(/"/g, '')
-      : 'file';
-    downloadLink.href = window.URL.createObjectURL(response.data);
-    downloadLink.download = fileName;
-    downloadLink.click();
-  } catch (error) {
-    console.log(error);
+  for (const user_file_id of selectFileIdList.value) {
+    try {
+      console.log(user_file_id);
+      const response = await instance.get('/api/transfers/download', {
+        params: {
+          user_file_id: user_file_id,
+        },
+        responseType: 'blob',
+      });
+      console.log(response);
+      const downloadLink = document.createElement('a');
+      const dispositionHeader = response.headers['content-disposition'];
+      const fileName = dispositionHeader
+        ? dispositionHeader.split('filename=')[1].replace(/"/g, '')
+        : 'file';
+      downloadLink.href = window.URL.createObjectURL(response.data);
+      downloadLink.download = fileName;
+      downloadLink.click();
+    } catch (error) {
+      console.log(error);
+    }
   }
 };
 
