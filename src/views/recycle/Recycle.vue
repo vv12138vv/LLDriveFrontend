@@ -26,7 +26,7 @@
         :options="tableOptions"
         @rowSelected="rowSelected"
       >
-        <template #fileName="{ index, row }">
+        <!-- <template #fileName="{ index, row }">
           <div
             class="file-item"
             @mouseenter="showOp(row)"
@@ -62,7 +62,7 @@
           <span v-if="row.fileSize">
             {{ proxy.Utils.size2Str(row.fileSize) }}</span
           >
-        </template>
+        </template> -->
       </Table>
     </div>
   </div>
@@ -74,54 +74,82 @@ import { useRouter, useRoute } from "vue-router";
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const route = useRoute();
+import axios from 'axios';
+// const api = {
+//   loadDataList: "/recycle/loadRecycleList",
+//   delFile: "/recycle/delFile",
+//   recoverFile: "/recycle/recoverFile",
+// };
 
-const api = {
-  loadDataList: "/recycle/loadRecycleList",
-  delFile: "/recycle/delFile",
-  recoverFile: "/recycle/recoverFile",
-};
+const instance = axios.create({
+  baseURL: "http://localhost:8848"
+})
+const userInfo = ref(
+  proxy.VueCookies.get("userInfo")
+);
 
 //列表
 const columns = [
   {
     label: "文件名",
-    prop: "fileName",
-    scopedSlots: "fileName",
+    prop: "file_name",
+    // scopedSlots: "fileName",
   },
   {
     label: "删除时间",
-    prop: "recoveryTime",
+    prop: "update_time",
     width: 200,
   },
   {
     label: "大小",
-    prop: "fileSize",
-    scopedSlots: "fileSize",
+    prop: "size",
+    // scopedSlots: "fileSize",
     width: 200,
   },
 ];
 //列表
-const tableData = ref({});
+// const tableData = ref({});
+const tableData = ref({ page_no: 1, page_size: 15 });
 const tableOptions = {
   extHeight: 20,
   selectType: "checkbox",
 };
+// const loadDataList = async () => {
+//   let params = {
+//     pageNo: tableData.value.pageNo,
+//     pageSize: tableData.value.pageSize,
+//   };
+//   if (params.category !== "all") {
+//     delete params.filePid;
+//   }
+//   let result = await proxy.Request({
+//     url: api.loadDataList,
+//     params,
+//   });
+//   if (!result) {
+//     return;
+//   }
+//   tableData.value = result.data;
+// };
+
 const loadDataList = async () => {
-  let params = {
-    pageNo: tableData.value.pageNo,
-    pageSize: tableData.value.pageSize,
-  };
-  if (params.category !== "all") {
-    delete params.filePid;
+  console.log("recycle.vue: call loadDataList");
+  try {
+    let response = await instance.post('/api/files/list/recycle', {
+      username: userInfo.value.nickName,
+      // page_no: 1,
+      // page_size: 15
+      page_no: tableData.value.page_no,
+      page_size: tableData.value.page_size
+    })
+    if (response.data.status_code == proxy.Status.success) {
+      tableData.value = response.data.data;
+      // console.log(tableData.value.data);
+      // editing.value = false;
+    }
+  } catch (error) {
+    console.log(error);
   }
-  let result = await proxy.Request({
-    url: api.loadDataList,
-    params,
-  });
-  if (!result) {
-    return;
-  }
-  tableData.value = result.data;
 };
 
 //展示操作按钮
@@ -140,7 +168,7 @@ const selectFileIdList = ref([]);
 const rowSelected = (rows) => {
   selectFileIdList.value = [];
   rows.forEach((item) => {
-    selectFileIdList.value.push(item.fileId);
+    selectFileIdList.value.push(item.user_file_id);
   });
 };
 
@@ -159,6 +187,24 @@ const revert = (row) => {
     loadDataList();
   });
 };
+
+// const revertBatch = () => {
+//   if (selectFileIdList.value.length == 0) {
+//     return;
+//   }
+//   proxy.Confirm(`你确定要还原这些文件吗？`, async () => {
+//     let result = await proxy.Request({
+//       url: api.recoverFile,
+//       params: {
+//         fileIds: selectFileIdList.value.join(","),
+//       },
+//     });
+//     if (!result) {
+//       return;
+//     }
+//     loadDataList();
+//   });
+// };
 
 const revertBatch = async () => {
   if (selectFileIdList.value.length === 0) {
@@ -185,6 +231,8 @@ const revertBatch = async () => {
     console.log(error);
   }
 };
+
+
 //删除文件
 const emit = defineEmits(["reload"]);
 const delFile = (row) => {
