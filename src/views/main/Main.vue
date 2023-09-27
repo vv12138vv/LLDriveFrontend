@@ -11,7 +11,7 @@
             </el-button>
           </el-upload>
         </div>
-        <el-button type="danger" @click="downloadFile" :disabled="selectFileIdList.length==0">
+        <el-button type="danger" @click="downloadFile">
           <!-- <span class="iconfont icon-folder-add"></span> -->
           下载
         </el-button>
@@ -280,8 +280,7 @@ const loadDataList = async () => {
       username: userInfo.value.nickName,
       dir_id: "",
       type: "",
-      // page_no: 1,
-      // page_size: 15
+      file_name: fileNameFuzzy.value,
       page_no: tableData.value.page_no,
       page_size: tableData.value.page_size
     })
@@ -299,16 +298,16 @@ const loadDataList = async () => {
 
 
 //展示操作按钮
-const showOp = (row) => {
-  tableData.value.list.forEach((element) => {
-    element.showOp = false;
-  });
-  row.showOp = true;
-};
+// const showOp = (row) => {
+//   tableData.value.list.forEach((element) => {
+//     element.showOp = false;
+//   });
+//   row.showOp = true;
+// };
 
-const cancelShowOp = (row) => {
-  row.showOp = false;
-};
+// const cancelShowOp = (row) => {
+//   row.showOp = false;
+// };
 
 //编辑行
 const editing = ref(false);
@@ -405,7 +404,7 @@ const selectFileIdList = ref([]);
 const selectFileList = ref([]);
 const rowSelected = (rows) => {
   selectFileList.value = rows;
-  // console.log("debug:" + selectFileList.value);
+  console.log("debug:" + selectFileList.value);
   selectFileIdList.value = [];
   rows.forEach((item) => {
     selectFileIdList.value.push(item.user_file_id);
@@ -413,36 +412,14 @@ const rowSelected = (rows) => {
 };
 
 //删除文件
-const delFile = (row) => {
-  proxy.Confirm(
-    `你确定要删除【${row.fileName}】吗？删除的文件可在10天内通过回收站还原`,
-    async () => {
-      let result = await proxy.Request({//api
-        url: api.delFile,
-        params: {
-          fileIds: row.fileId,
-        },
-      });
-      if (!result) {
-        return;
-      }
-      loadDataList();
-    }
-  );
-};
-
-// 批量删除
-// const delFileBatch = () => {
-//   if (selectFileIdList.value.length == 0) {
-//     return;
-//   }
+// const delFile = (row) => {
 //   proxy.Confirm(
-//     `你确定要删除这些文件吗？删除的文件可在10天内通过回收站还原`,
+//     `你确定要删除【${row.fileName}】吗？删除的文件可在10天内通过回收站还原`,
 //     async () => {
 //       let result = await proxy.Request({//api
 //         url: api.delFile,
 //         params: {
-//           fileIds: selectFileIdList.value.join(","),
+//           fileIds: row.fileId,
 //         },
 //       });
 //       if (!result) {
@@ -453,30 +430,26 @@ const delFile = (row) => {
 //   );
 // };
 
-const delFileBatch = async () => {
-  if (selectFileIdList.value.length === 0) {
+//批量删除
+const delFileBatch = () => {
+  if (selectFileIdList.value.length == 0) {
     return;
   }
-  try {
-    const confirmed = window.confirm("你确定要删除这些文件吗?删除的文件可在10天内通过回收站还原");
-    if (!confirmed) {
-      return;
-    }
-    for(const user_file_id of selectFileIdList.value){
-      const result = await instance.get('/api/files/delete',{
+  proxy.Confirm(
+    `你确定要删除这些文件吗？删除的文件可在10天内通过回收站还原`,
+    async () => {
+      let result = await proxy.Request({//api
+        url: api.delFile,
         params: {
-          user_file_id: user_file_id,
-          username: userInfo.value.nickName
-        }
-      })
+          fileIds: selectFileIdList.value.join(","),
+        },
+      });
       if (!result) {
         return;
       }
+      loadDataList();
     }
-    loadDataList();
-  } catch (error) {
-    console.log(error);
-  }
+  );
 };
 
 const downloadFile = async () => {
@@ -560,18 +533,18 @@ const moveFolderDone = async (folderId) => {
 
 const previewRef = ref();
 const navigationRef = ref();
-const preview = (data) => {
-  if (data.folderType == 1) {
-    //openFolder(data);
-    navigationRef.value.openFolder(data);
-    return;
-  }
-  if (data.status != 2) {
-    proxy.Message.warning("文件正在转码中，无法预览");
-    return;
-  }
-  previewRef.value.showPreview(data, 0);
-};
+// const preview = (data) => {
+//   if (data.folderType == 1) {
+//     //openFolder(data);
+//     navigationRef.value.openFolder(data);
+//     return;
+//   }
+//   if (data.status != 2) {
+//     proxy.Message.warning("文件正在转码中，无法预览");
+//     return;
+//   }
+//   previewRef.value.showPreview(data, 0);
+// };
 
 //目录
 const navChange = (data) => {
