@@ -36,14 +36,16 @@
             :align="column.align || 'left'"
             :width="column.width"
           >
-            <!-- <template #default="scope">
+
+          <!-- scope注释掉可以显示文件，不注释可以创建文件夹 -->
+            <template #default="scope">
               <slot
                 :name="column.scopedSlots"
                 :index="scope.$index"
                 :row="scope.row"
               >
               </slot>
-            </template> -->
+            </template>
           </el-table-column>
         </template>
         <template v-else>

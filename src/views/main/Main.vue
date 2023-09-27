@@ -95,8 +95,7 @@
                 >转码失败</span
               >
             </span>
-            <div class="edit-panel" v-if="row.showEdit">
-              
+            <div class="edit-panel" v-if="row.showEdit == true">
               <el-input
                 v-model.trim="row.fileNameReal"
                 ref="editNameRef"
@@ -144,10 +143,11 @@
             </span>
           </div>
         </template>
-        <template #fileSize="{ index, row }">
-          <span v-if="row.file_size">
-            {{ proxy.Utils.size2Str(row.file_size) }}</span
-          >
+        <template #file_size="{ index, row }">
+          <span v-if="row.file_size > 0">
+           <!-- {{row.file_size}} -->
+            {{ proxy.Utils.size2Str(row.file_size) }}
+          </span>
         </template>
       </Table>
     </div>
@@ -324,7 +324,21 @@ const loadDataList = async () => {
       page_size: tableData.value.page_size
     })
     if(response.data.status_code==proxy.Status.success){
-      tableData.value = response.data.data;
+      const p = response.data.data;
+      p.list.forEach((element)=>{
+        element.fileName = element.file_name;
+        element.folderType = element.is_dir == true ? 1:0;
+        element.fileType = element.type;
+        //下面解注释使文件预览
+        // element.status = 2;
+        element.file_size = element.size;
+        
+      })
+
+
+      // tableData.value = response.data.data;
+      tableData.value = p;
+      console.log(p);
       // console.log(tableData.value.data);
       editing.value = false;
     }
@@ -370,9 +384,9 @@ const newFolder = () => {
     // fileNameReal: "nnn",
   });
   console.log(tableData.value.list);
-  nextTick(() => {
-  editNameRef.value.focus();
-});
+//   nextTick(() => {
+//   editNameRef.value.focus();
+// });
 };
 
 const cancelNameEdit = (index) => {
