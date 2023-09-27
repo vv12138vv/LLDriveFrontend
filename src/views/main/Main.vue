@@ -71,12 +71,14 @@
         :options="tableOptions"
         @rowSelected="rowSelected"
       >
-        <!-- <template #file_name="{ index, row }">
+     
+        <template #file_name="{ index, row }">
           <div
             class="file-item"
             @mouseenter="showOp(row)"
             @mouseleave="cancelShowOp(row)"
           >
+         
             <template
               v-if="(row.fileType == 3 || row.fileType == 1) && row.status == 2"
             >
@@ -94,6 +96,7 @@
               >
             </span>
             <div class="edit-panel" v-if="row.showEdit">
+              
               <el-input
                 v-model.trim="row.fileNameReal"
                 ref="editNameRef"
@@ -102,6 +105,7 @@
               >
                 <template #suffix>{{ row.fileSuffix }}</template>
               </el-input>
+              
               <span
                 :class="[
                   'iconfont icon-right1',
@@ -139,12 +143,12 @@
               </template>
             </span>
           </div>
-        </template> -->
-        <!-- <template #fileSize="{ index, row }">
+        </template>
+        <template #fileSize="{ index, row }">
           <span v-if="row.file_size">
             {{ proxy.Utils.size2Str(row.file_size) }}</span
           >
-        </template> -->
+        </template>
       </Table>
     </div>
 
@@ -187,7 +191,7 @@
 <script setup>
 import CategoryInfo from "@/js/CategoryInfo.js";
 import FileShare from "./ShareFile.vue";
-import { ref, reactive, getCurrentInstance, nextTick, computed } from "vue";
+import { ref, reactive, getCurrentInstance, nextTick, computed,toRef } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import axios from 'axios';
 const { proxy } = getCurrentInstance();
@@ -346,13 +350,14 @@ const cancelShowOp = (row) => {
 
 //编辑行
 const editing = ref(false);
-const editNameRef = ref();
+  const editNameRef = ref();
 
 //新建文件夹
 const newFolder = () => {
   if (editing.value) {
     return;
   }
+
   tableData.value.list.forEach((element) => {
     element.showEdit = false;
   });
@@ -362,10 +367,12 @@ const newFolder = () => {
     fileType: 0,
     fileId: "",
     filePid: currentFolder.value.fileId,
+    // fileNameReal: "nnn",
   });
+  console.log(tableData.value.list);
   nextTick(() => {
-    editNameRef.value.focus();
-  });
+  editNameRef.value.focus();
+});
 };
 
 const cancelNameEdit = (index) => {

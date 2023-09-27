@@ -41,11 +41,13 @@
         :fetch="loadDataList"
         :options="tableOptions"
       >
-        <template #avatar="{ index, row }">
+        <!-- <template #avatar="{ index, row }">
           <div class="avatar">
             <Avatar :userId="row.userId" :avatar="row.qqAvatar"></Avatar>
           </div>
-        </template>
+        </template> -->
+
+        
 
         <template #space="{ index, row }">
           {{ proxy.Utils.size2Str(row.useSpace) }}/{{
@@ -105,6 +107,11 @@ import { useRouter, useRoute } from "vue-router";
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const route = useRoute();
+import axios from 'axios';
+const instance = axios.create({
+  baseURL: "http://localhost:8848"
+})
+
 
 const api = {
   loadDataList: "/admin/loadUserList",
@@ -114,12 +121,12 @@ const api = {
 
 //列表
 const columns = [
-  {
-    label: "头像",
-    prop: "avatar",
-    width: 80,
-    scopedSlots: "avatar",
-  },
+  // {
+  //   label: "头像",
+  //   prop: "avatar",
+  //   width: 80,
+  //   scopedSlots: "avatar",
+  // },
   {
     label: "昵称",
     prop: "nickName",
@@ -162,19 +169,34 @@ const tableOptions = {
   extHeight: 20,
 };
 const loadDataList = async () => {
-  let params = {
-    pageNo: tableData.value.pageNo,
-    pageSize: tableData.value.pageSize,
-  };
-  Object.assign(params, searchFormData.value);
-  let result = await proxy.Request({
-    url: api.loadDataList,
-    params,
-  });
-  if (!result) {
-    return;
-  }
-  tableData.value = result.data;
+  try{
+    const response = await instance.get('/api/users/list');
+   const p = response.data.data;
+   p.user.forEach((element)=>{
+     element.useSpace = element.cur_capacity;
+     element.totalSpace = element.max_capacity;
+     element.status = element.is_banned;
+     
+   })
+   console.log(p.user);
+   tableData.value = p;
+  } catch (error) {
+        console.log(error);
+      }
+  
+  // let params = {
+  //   pageNo: tableData.value.pageNo,
+  //   pageSize: tableData.value.pageSize,
+  // };
+  // Object.assign(params, searchFormData.value);
+  // let result = await proxy.Request({
+  //   url: api.loadDataList,
+  //   params,
+  // });
+  // if (!result) {
+  //   return;
+  // }
+  // tableData.value = result.data;
 };
 
 //修改状态
