@@ -442,7 +442,7 @@ const rowSelected = (rows) => {
   console.log("debug:"+selectFileList.value);
   selectFileIdList.value = [];
   rows.forEach((item) => {
-    selectFileIdList.value.push(item.fileId);
+    selectFileIdList.value.push(item.user_file_id);
   });
 };
 
@@ -486,22 +486,32 @@ const delFileBatch = () => {
     }
   );
 };
-const downloadFile = ()=>{
-  if (selectFileIdList.value.length == 0) {
+const downloadFile = async () => {
+  if (selectFileIdList.value.length === 0) {
     return;
   }
-  async ()=>{
-    try{
-      let result= await instance.get('/api/transfers/download',{
-        params:{
-          user_file_id: selectFileIdList.value.user_file_id,
-        }
-      })
-    }catch(error){
-      console.log(error);
-    }
+  try {
+    const response = await instance.get('/api/transfers/download', {
+      params: {
+        user_file_id: selectFileIdList.value[0],
+      },
+      responseType: 'blob',
+    });
+    console.log(response);
+    const downloadLink = document.createElement('a');
+    const dispositionHeader = response.headers['content-disposition'];
+    const fileName = dispositionHeader
+      ? dispositionHeader.split('filename=')[1].replace(/"/g, '')
+      : 'file';
+    downloadLink.href = window.URL.createObjectURL(response.data);
+    downloadLink.download = fileName;
+    downloadLink.click();
+  } catch (error) {
+    console.log(error);
   }
-}
+};
+
+
 
 //移动目录
 const folderSelectRef = ref();
