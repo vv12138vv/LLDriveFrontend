@@ -223,7 +223,6 @@ defineExpose({
   reload,
 });
 
-
 // const api = {
 //   loadDataList: "/file/loadDataList",
 //   rename: "/file/rename",
@@ -245,7 +244,7 @@ const columns = [
   {
     label: "文件名",
     prop: "file_name",
-    scopedSlots: "file_name",
+    // scopedSlots: "file_name",
   },
   {
     label: "修改时间",
@@ -255,7 +254,7 @@ const columns = [
   {
     label: "大小",
     prop: "size",
-    scopedSlots: "file_size",
+    // scopedSlots: "file_size",
     width: 200,
   },
 ];
@@ -346,7 +345,7 @@ const loadDataList = async () => {
   }
 
 };
-
+console.debug("debug"+route.params.myParameter);
 
 
 //展示操作按钮
@@ -486,29 +485,34 @@ const delFile = (row) => {
 };
 
 //批量删除
-const delFileBatch = () => {
-  if (selectFileIdList.value.length == 0) {
+const delFileBatch = async () => {
+  if (selectFileIdList.value.length === 0) {
     return;
   }
-  proxy.Confirm(
-    `你确定要删除这些文件吗？删除的文件可在10天内通过回收站还原`,
-    async () => {
-      let result = await proxy.Request({//api
-        url: api.delFile,
+  try {
+    const confirmed = window.confirm("你确定要删除这些文件吗?删除的文件可在10天内通过回收站还原");
+    if (!confirmed) {
+      return;
+    }
+    for(const user_file_id of selectFileIdList.value){
+      const result = await instance.get('/api/files/delete',{
         params: {
-          fileIds: selectFileIdList.value.join(","),
-        },
-      });
+          user_file_id: user_file_id,
+          username: userInfo.value.nickName
+        }
+      })
       if (!result) {
         return;
       }
-      loadDataList();
     }
-  );
+    loadDataList();
+  } catch (error) {
+    console.log(error);
+  }
 };
-
-const downloadFile = ()=>{
-  if (selectFileIdList.value.length == 0) {
+//批量下载
+const downloadFile = async () => {
+  if (selectFileIdList.value.length === 0) {
     return;
   }
   async ()=>{
