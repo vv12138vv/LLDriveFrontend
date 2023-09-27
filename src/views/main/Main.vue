@@ -515,18 +515,29 @@ const downloadFile = async () => {
   if (selectFileIdList.value.length === 0) {
     return;
   }
-  async ()=>{
-    try{
-      let result= await instance.get('/api/transfers/download',{
-        params:{
-          user_file_id: selectFileIdList.value.user_file_id,
-        }
-      })
-    }catch(error){
+  for (const user_file_id of selectFileIdList.value) {
+    try {
+      console.log(user_file_id);
+      const response = await instance.get('/api/transfers/download', {
+        params: {
+          user_file_id: user_file_id,
+        },
+        responseType: 'blob',
+      });
+      console.log(response);
+      const downloadLink = document.createElement('a');
+      const dispositionHeader = response.headers['content-disposition'];
+      const fileName = dispositionHeader
+        ? dispositionHeader.split('filename=')[1].replace(/"/g, '')
+        : 'file';
+      downloadLink.href = window.URL.createObjectURL(response.data);
+      downloadLink.download = fileName;
+      downloadLink.click();
+    } catch (error) {
       console.log(error);
     }
   }
-}
+};
 
 //移动目录
 const folderSelectRef = ref();
