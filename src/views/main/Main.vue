@@ -11,7 +11,7 @@
             </el-button>
           </el-upload>
         </div>
-        <el-button type="danger" @click="downloadFile">
+        <el-button type="danger" @click="downloadFile" :disabled="selectFileIdList.length==0">
           <!-- <span class="iconfont icon-folder-add"></span> -->
           下载
         </el-button>
@@ -405,7 +405,7 @@ const selectFileIdList = ref([]);
 const selectFileList = ref([]);
 const rowSelected = (rows) => {
   selectFileList.value = rows;
-  console.log("debug:" + selectFileList.value);
+  // console.log("debug:" + selectFileList.value);
   selectFileIdList.value = [];
   rows.forEach((item) => {
     selectFileIdList.value.push(item.user_file_id);
@@ -431,27 +431,54 @@ const delFile = (row) => {
   );
 };
 
-//批量删除
-const delFileBatch = () => {
-  if (selectFileIdList.value.length == 0) {
+// 批量删除
+// const delFileBatch = () => {
+//   if (selectFileIdList.value.length == 0) {
+//     return;
+//   }
+//   proxy.Confirm(
+//     `你确定要删除这些文件吗？删除的文件可在10天内通过回收站还原`,
+//     async () => {
+//       let result = await proxy.Request({//api
+//         url: api.delFile,
+//         params: {
+//           fileIds: selectFileIdList.value.join(","),
+//         },
+//       });
+//       if (!result) {
+//         return;
+//       }
+//       loadDataList();
+//     }
+//   );
+// };
+
+const delFileBatch = async () => {
+  if (selectFileIdList.value.length === 0) {
     return;
   }
-  proxy.Confirm(
-    `你确定要删除这些文件吗？删除的文件可在10天内通过回收站还原`,
-    async () => {
-      let result = await proxy.Request({//api
-        url: api.delFile,
+  try {
+    const confirmed = window.confirm("你确定要删除这些文件吗?删除的文件可在10天内通过回收站还原");
+    if (!confirmed) {
+      return;
+    }
+    for(const user_file_id of selectFileIdList.value){
+      const result = await instance.get('/api/files/delete',{
         params: {
-          fileIds: selectFileIdList.value.join(","),
-        },
-      });
+          user_file_id: user_file_id,
+          username: userInfo.value.nickName
+        }
+      })
       if (!result) {
         return;
       }
-      loadDataList();
     }
-  );
+    loadDataList();
+  } catch (error) {
+    console.log(error);
+  }
 };
+
 const downloadFile = async () => {
   if (selectFileIdList.value.length === 0) {
     return;
