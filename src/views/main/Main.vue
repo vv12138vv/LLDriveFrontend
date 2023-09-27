@@ -16,6 +16,10 @@
             </el-button>
           </el-upload>
         </div>
+        <el-button type="danger" @click="downloadFile">
+          <!-- <span class="iconfont icon-folder-add"></span> -->
+          下载
+        </el-button>
         <el-button type="success" @click="newFolder" v-if="category == 'all'">
           <!-- <span class="iconfont icon-folder-add"></span> -->
           新建文件夹
@@ -435,6 +439,7 @@ const selectFileIdList = ref([]);
 const selectFileList = ref([]);
 const rowSelected = (rows) => {
   selectFileList.value = rows;
+  console.log("debug:"+selectFileList.value);
   selectFileIdList.value = [];
   rows.forEach((item) => {
     selectFileIdList.value.push(item.fileId);
@@ -459,6 +464,7 @@ const delFile = (row) => {
     }
   );
 };
+
 //批量删除
 const delFileBatch = () => {
   if (selectFileIdList.value.length == 0) {
@@ -480,6 +486,22 @@ const delFileBatch = () => {
     }
   );
 };
+const downloadFile = ()=>{
+  if (selectFileIdList.value.length == 0) {
+    return;
+  }
+  async ()=>{
+    try{
+      let result= await instance.get('/api/transfers/download',{
+        params:{
+          user_file_id: selectFileIdList.value.user_file_id,
+        }
+      })
+    }catch(error){
+      console.log(error);
+    }
+  }
+}
 
 //移动目录
 const folderSelectRef = ref();
@@ -565,18 +587,6 @@ const navChange = (data) => {
 //   window.location.href = api.download + "/" + result.data;
 // };
 
-const download = async (row) => {
-  // let result = await proxy.Request({//下载文件
-  //   url: api.createDownloadUrl + "/" + row.fileId,
-  // });
-  let result = await proxy.get('/api/transfers/download',{
-    user_file_id: row.user_file_id
-  })
-  if (!result) {
-    return;
-  }
-  window.location.href = api.download + "/" + result.data;
-};
 
 //分享
 const shareRef = ref();
