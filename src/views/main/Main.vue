@@ -185,7 +185,6 @@ defineExpose({
   reload,
 });
 
-
 // const api = {
 //   loadDataList: "/file/loadDataList",
 //   rename: "/file/rename",
@@ -207,7 +206,7 @@ const columns = [
   {
     label: "文件名",
     prop: "file_name",
-    scopedSlots: "file_name",
+    // scopedSlots: "file_name",
   },
   {
     label: "修改时间",
@@ -217,7 +216,7 @@ const columns = [
   {
     label: "大小",
     prop: "size",
-    scopedSlots: "file_size",
+    // scopedSlots: "file_size",
     width: 200,
   },
 ];
@@ -294,7 +293,7 @@ const loadDataList = async () => {
   }
 
 };
-
+console.debug("debug"+route.params.myParameter);
 
 
 //展示操作按钮
@@ -451,7 +450,7 @@ const delFileBatch = () => {
     }
   );
 };
-
+//批量下载
 const downloadFile = async () => {
   if (selectFileIdList.value.length === 0) {
     return;

@@ -81,10 +81,10 @@
             :class="['menu-item-sub', currentPath == sub.path ? 'active' : '']"
             v-for="sub in currentMenu.children"
           >
-            <!-- <span
+            <span
               :class="['iconfont', 'icon-' + sub.icon]"
               v-if="sub.icon"
-            ></span> -->
+            ></span>
             <span class="text">{{ sub.name }}</span>
           </div>
           <div class="tips" v-if="currentMenu && currentMenu.tips">
@@ -121,6 +121,7 @@
             ref="routerViewRef"
             :is="Component"
             @reload="getUseSpace"
+            :myParameter="myParameter"
           />
         </router-view>
       </div>
@@ -162,6 +163,7 @@ import axios from 'axios';
 const instance = axios.create({
   baseURL: "http://localhost:8848"
 })
+const parentType=ref({type: 0});
 
 // const api = {
 //   getUseSpace: "/getUseSpace",
@@ -230,13 +232,7 @@ const menus = [
         name: "文档",
         category: "doc",
         path: "/main/doc",
-      },
-      {
-        icon: "more",
-        name: "其他",
-        category: "others",
-        path: "/main/others",
-      },
+      }
     ],
   },
   {
@@ -291,7 +287,7 @@ const menus = [
 
 const currentMenu = ref({});
 const currentPath = ref();
-
+const myParameter="Hello,World";
 const jump = (data) => {
   if (!data.path || data.menuCode == currentMenu.value.menuCode) {
     return;
