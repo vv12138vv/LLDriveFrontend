@@ -56,12 +56,12 @@
 
 
     <!-- 这下面的 initFetch 最后要改为 false -->
-    <div class="file-list" v-if="tableData && tableData.length > 0">
+    <div class="file-list" v-if="tableData.list && tableData.list.length > 0">
       <Table
         ref="dataTableRef"
         :columns="columns"
         :showPagination="true"
-        :dataSource="tableData.value"
+        :dataSource="tableData"
         :fetch="loadDataList"
         :initFetch="false"
         :options="tableOptions"
@@ -238,18 +238,18 @@ const fileAccept = computed(() => {
 const columns = [
   {
     label: "文件名",
-    prop: "fileName",
-    scopedSlots: "fileName",
+    prop: "file_name",
+    scopedSlots: "file_name",
   },
   {
     label: "修改时间",
-    prop: "lastUpdateTime",
+    prop: "update_time",
     width: 200,
   },
   {
     label: "大小",
-    prop: "fileSize",
-    scopedSlots: "fileSize",
+    prop: "size",
+    scopedSlots: "file_size",
     width: 200,
   },
 ];
@@ -306,24 +306,24 @@ const loadDataList = async () => {
   //   showLoading: showLoading,
   //   params,
   // });
-  console.log(currentFolder.value.user_file_id);
+  // console.log(currentFolder.value.user_file_id);
   try{
-    let response = await instance.get('/api/files/list',{
-      params: {
-        username: userInfo.value.nickName,
-        dir_id: "",
-        type: ""
-      }
+    let response = await instance.post('/api/files/list',{
+      username: userInfo.value.nickName,
+      dir_id: "",
+      type: "",
+      page_no: 1,
+      page_size: 10
     })
     if(response.data.status_code==proxy.Status.success){
-      tableData.value = response.data;
-      console.log(tableData.value.data);
+      tableData.value = response.data.data;
+      // console.log(tableData.value.data);
+      editing.value = false;
     }
   }catch(error){
     console.log(error);
   }
 
-  // editing.value = false;
 };
 
 
