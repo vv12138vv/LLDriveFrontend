@@ -36,14 +36,14 @@
             :align="column.align || 'left'"
             :width="column.width"
           >
-            <template #default="scope">
+            <!-- <template #default="scope">
               <slot
                 :name="column.scopedSlots"
                 :index="scope.$index"
                 :row="scope.row"
               >
               </slot>
-            </template>
+            </template> -->
           </el-table-column>
         </template>
         <template v-else>
@@ -62,12 +62,12 @@
     <!-- 分页 -->
     <div class="pagination" v-if="showPagination">
       <el-pagination
-        v-if="dataSource.totalCount"
+        v-if="dataSource.total_count"
         background
-        :total="dataSource.totalCount"
+        :total="dataSource.total_count"
         :page-sizes="[15, 30, 50, 100]"
-        :page-size="dataSource.pageSize"
-        :current-page.sync="dataSource.pageNo"
+        :page-size="dataSource.page_size"
+        :current-page.sync="dataSource.page_no"
         :layout="layout"
         @size-change="handlePageSizeChange"
         @current-change="handlePageNoChange"
@@ -155,13 +155,13 @@ const handleSelectionChange = (row) => {
 
 //切换每页大小
 const handlePageSizeChange = (size) => {
-  props.dataSource.pageSize = size;
-  props.dataSource.pageNo = 1;
+  props.dataSource.page_size = size;
+  props.dataSource.page_no = 1;
   props.fetch();
 };
 // 切换页码
 const handlePageNoChange = (pageNo) => {
-  props.dataSource.pageNo = pageNo;
+  props.dataSource.page_no = pageNo;
   props.fetch();
 };
 </script>

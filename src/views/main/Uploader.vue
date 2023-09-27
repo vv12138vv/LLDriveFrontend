@@ -173,7 +173,7 @@
     },
   };
   
-  const chunkSize = 1024 * 512;
+  const chunkSize = 1024*1024*5;
   const fileList = ref([]);
   const delList = ref([]);
   
@@ -246,7 +246,8 @@
     let currentFile = getFileByUid(uid);
     const file = currentFile.file;
     const fileSize = currentFile.totalSize;
-    const chunks = Math.ceil(fileSize / chunkSize);
+    // const chunks = Math.ceil(fileSize / chunkSize);
+    const chunks = 1;
     for (let i = chunkIndex; i < chunks; i++) {
       let delIndex = delList.value.indexOf(uid);
       if (delIndex != -1) {
@@ -263,13 +264,14 @@
       let chunkFile = file.slice(start, end);
 
       let formData = new FormData();
-      formData.append('chunkFlag', 1);
+      // formData.append('chunkFlag', 1);
+      formData.append('chunkFlag', 0);
       formData.append('file', chunkFile);
       formData.append('fileName', file.name);
       formData.append('hash', currentFile.md5);
       formData.append('chunkNumber', i);
       formData.append('totalChunks', chunks);
-      formData.append('dir_id', currentFile.fileId);
+      formData.append('dir_id', "");
       //只上传文件，上传文件夹
       formData.append('dir', 0);
       formData.append('totalSize', fileSize);
@@ -325,7 +327,7 @@
       }
       // currentFile.fileId = uploadResult.data.fileId;
       
-      // currentFile.status = STATUS[uploadResult.data.status].value;
+      currentFile.status = STATUS[uploadResult.data.data.status].value;
       currentFile.chunkIndex = i;
       if (
         uploadResult.data.status == STATUS.upload_seconds.value ||

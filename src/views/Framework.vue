@@ -163,10 +163,10 @@ const instance = axios.create({
   baseURL: "http://localhost:8848"
 })
 
-const api = {
-  getUseSpace: "/getUseSpace",
-  logout: "/logout",
-};
+// const api = {
+//   getUseSpace: "/getUseSpace",
+//   logout: "/logout",
+// };
 
 //显示上传窗口
 const showUploader = ref(false);

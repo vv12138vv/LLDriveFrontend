@@ -9,8 +9,8 @@
       class="link"
       @click="setCurrentFolder(-1)"
       v-if="folderList.length > 0"
-      >全部文件</span
-    >
+      >全部文件
+    </span>
     <template v-for="(item, index) in folderList">
       <span class="iconfont icon-right"></span>
       <span
@@ -32,7 +32,10 @@ import { useRouter, useRoute } from "vue-router";
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const route = useRoute();
-
+import axios from "axios";
+const isntance = axios.create({
+  baseURL: 'http://localhost:8848'
+})
 const props = defineProps({
   watchPath: {
     type: Boolean, //是否监听路径变化
@@ -47,32 +50,34 @@ const props = defineProps({
   },
 });
 
-const api = {
-  getFolderInfo: "/file/getFolderInfo",
-  getFolderInfo4Share: "/showShare/getFolderInfo",
-  getFolderInfo4Admin: "/admin/getFolderInfo",
-};
+// const api = {
+//   getFolderInfo: "/file/getFolderInfo",
+//   getFolderInfo4Share: "/showShare/getFolderInfo",
+//   getFolderInfo4Admin: "/admin/getFolderInfo",
+// };
 
 //分类
 const category = ref();
 //目录
 const folderList = ref([]);
 //当前目录
-const currentFolder = ref({ fileId: "0" });
-
+const currentFolder = ref({ user_file_id: "" });
+const userInfo = ref(
+  proxy.VueCookies.get("userInfo")
+);
 //初始化
 const init = () => {
   folderList.value = [];
-  currentFolder.value = { fileId: "0" };
+  currentFolder.value = { user_file_id: "" };
   doCallback();
 };
 
 //点击目录
 const openFolder = (data) => {
-  const { fileId, fileName } = data;
+  const { user_file_id, file_name } = data;
   const folder = {
-    fileName: fileName,
-    fileId: fileId,
+    file_name: file_name,
+    user_file_id: user_file_id,
   };
   folderList.value.push(folder);
   currentFolder.value = folder;
@@ -129,26 +134,36 @@ const setPath = () => {
 
 //获取当前路径的目录
 const getNavigationFolder = async (path) => {
-  let url = api.getFolderInfo;
-  if (props.shareId) {
-    url = api.getFolderInfo4Share;
-  }
-  if (props.adminShow) {
-    url = api.getFolderInfo4Admin;
-  }
-
-  let result = await proxy.Request({
-    url: url,
-    showLoading: false,
-    params: {
-      path: path,
-      shareId: props.shareId,
-    },
-  });
-  if (!result) {
-    return;
-  }
-  folderList.value = result.data;
+  // let url = api.getFolderInfo;
+  // if (props.shareId) {
+  //   url = api.getFolderInfo4Share;
+  // }
+  // if (props.adminShow) {
+  //   url = api.getFolderInfo4Admin;
+  // }
+  // let result = await proxy.Request({
+  //   url: url,
+  //   showLoading: false,
+  //   params: {
+  //     path: path,
+  //     shareId: props.shareId,
+  //   },
+  // });
+  try{
+    let result = await isntance.post('/api/files/list',{
+      username: userInfo.value.nickName,
+      dir_id: "",
+      type: "",
+      page_no: "",
+      page_size: "",
+    })
+      if (!result) {
+      return;
+    }
+    folderList.value = result.data;
+    }catch(error){
+      console.log(error);
+    }
 };
 
 const emit = defineEmits(["navChange"]);

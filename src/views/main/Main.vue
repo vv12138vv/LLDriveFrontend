@@ -67,7 +67,7 @@
         :options="tableOptions"
         @rowSelected="rowSelected"
       >
-        <template #fileName="{ index, row }">
+        <!-- <template #file_name="{ index, row }">
           <div
             class="file-item"
             @mouseenter="showOp(row)"
@@ -111,8 +111,6 @@
               ></span>
             </div>
             <span class="op">
-              <!-- row.status==2转码成功  -->
-              <!-- folderType==0 是文件 ，folderType==1 是目录-->
               <template v-if="row.showOp && row.fileId && row.status == 2">
                 <span class="iconfont icon-share1" @click="share(row)"
                   >分享</span
@@ -137,12 +135,12 @@
               </template>
             </span>
           </div>
-        </template>
-        <template #fileSize="{ index, row }">
-          <span v-if="row.fileSize">
-            {{ proxy.Utils.size2Str(row.fileSize) }}</span
+        </template> -->
+        <!-- <template #fileSize="{ index, row }">
+          <span v-if="row.file_size">
+            {{ proxy.Utils.size2Str(row.file_size) }}</span
           >
-        </template>
+        </template> -->
       </Table>
     </div>
 
@@ -259,7 +257,7 @@ const search = () => {
   loadDataList();
 };
 //列表
-const tableData = ref({});
+const tableData = ref({page_no: 1,page_size: 15});
 const tableOptions = {
   extHeight: 50,
   selectType: "checkbox",
@@ -312,8 +310,10 @@ const loadDataList = async () => {
       username: userInfo.value.nickName,
       dir_id: "",
       type: "",
-      page_no: 1,
-      page_size: 10
+      // page_no: 1,
+      // page_size: 15
+      page_no: tableData.value.page_no,
+      page_size: tableData.value.page_size
     })
     if(response.data.status_code==proxy.Status.success){
       tableData.value = response.data.data;
