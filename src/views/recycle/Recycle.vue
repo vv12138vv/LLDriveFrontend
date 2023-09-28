@@ -59,7 +59,7 @@
           </div>
         </template>
         <template #file_size="{ index, row }">
-          <span v-if="row.fileSize">
+          <span v-if="row.fileSize>0">
             {{ proxy.Utils.size2Str(row.fileSize) }}</span
           >
         </template>
@@ -150,7 +150,7 @@ const loadDataList = async () => {
         element.fileType = element.type;
         //下面解注释使文件预览
         element.status = 0;
-        element.file_size = element.size;
+        element.fileSize = element.size;
         
       })
       // tableData.value = response.data.data;
