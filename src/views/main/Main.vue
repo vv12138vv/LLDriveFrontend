@@ -323,7 +323,7 @@ const loadDataList = async () => {
         element.status = 2;
         element.fileSize = element.size;
         element.fileId = element.user_file_id;
-        element.showOp = true;
+        // element.showOp = true;
         // element.fileCover = 
         
       })

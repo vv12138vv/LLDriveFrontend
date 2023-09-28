@@ -25,12 +25,12 @@
                 <el-radio :label="3">永久有效</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="提取码" prop="codeType">
+            <!-- <el-form-item label="提取码" prop="codeType">
               <el-radio-group v-model="formData.codeType">
                 <el-radio :label="0">自定义</el-radio>
                 <el-radio :label="1">系统生成</el-radio>
               </el-radio-group>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item prop="code" v-if="formData.codeType == 0">
               <el-input
                 clearable
