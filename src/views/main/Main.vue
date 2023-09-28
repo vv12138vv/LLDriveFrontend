@@ -16,7 +16,7 @@
             </el-button>
           </el-upload>
         </div>
-        <el-button type="danger" @click="downloadFile">
+        <el-button type="danger" @click="downloadFile" :disabled="selectFileIdList.length == 0">
           <!-- <span class="iconfont icon-folder-add"></span> -->
           下载
         </el-button>
