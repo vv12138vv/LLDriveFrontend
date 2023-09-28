@@ -5,23 +5,30 @@
       <el-divider direction="vertical" />
     </template>
     <span v-if="folderList.length == 0" class="all-file">全部文件</span>
-    <span
+    <!-- <span
       class="link"
       @click="setCurrentFolder(-1)"
       v-if="folderList.length > 0"
       >全部文件
-    </span>
+    </span> -->
     <template v-for="(item, index) in folderList">
       <span class="iconfont icon-right"></span>
       <span
         class="link"
         @click="setCurrentFolder(index)"
         v-if="index < folderList.length - 1"
-        >{{ item.fileName }}</span
-      >
-      <span v-if="index == folderList.length - 1" class="text">{{
+        >
+        <!-- {{ item.fileName }} -->
+        {{ item.file_name}}
+        </span>
+      <span v-if="index == folderList.length - 1" class="text">\
+      <!-- {{
         item.fileName
-      }}</span>
+      }} -->
+      {{
+        item.file_name
+      }}
+      </span>
     </template>
   </div>
 </template>
@@ -62,6 +69,7 @@ const category = ref();
 const folderList = ref([]);
 //当前目录
 const currentFolder = ref({ user_file_id: "" });
+// const currentFolder = ref({  });
 const userInfo = ref(
   proxy.VueCookies.get("userInfo")
 );
@@ -82,7 +90,8 @@ const openFolder = (data) => {
   // console.log(folder)
   folderList.value.push(folder);
   currentFolder.value = folder;
-  // console.log(folderList.value);
+  console.log(folderList.value);
+  console.log(folder);
   setPath();
 };
 
@@ -140,6 +149,9 @@ const setPath = () => {
 
 //获取当前路径的目录
 const getNavigationFolder = async (path) => {
+
+
+// console.log(pathArray);
   // let url = api.getFolderInfo;
   // if (props.shareId) {
   //   url = api.getFolderInfo4Share;
@@ -158,9 +170,18 @@ const getNavigationFolder = async (path) => {
 
 
 
+  // let pathArray = path.split('/');
+  
+  // try{
+  //   let result = await isntance.get('/api/files/list',{
+  //     params: {
+  //       email: formData.value.email
+  //     }
 
+  //   })
+  // }
   try{
-    let result = await isntance.post('/api/files/list',{
+    let result = await isntance.get('/api/files/list',{
       username: userInfo.value.nickName,
       dir_id: currentFolder.value.user_file_id,
       type: 0,
@@ -172,6 +193,7 @@ const getNavigationFolder = async (path) => {
       return;
     }
     folderList.value = result.data.data.list;
+    console.log(folderList);
     }catch(error){
       console.log(error);
     }
