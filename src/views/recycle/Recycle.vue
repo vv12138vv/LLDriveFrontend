@@ -26,19 +26,19 @@
         :options="tableOptions"
         @rowSelected="rowSelected"
       >
-        <!-- <template #fileName="{ index, row }">
+        <template #file_name="{ index, row }">
           <div
             class="file-item"
             @mouseenter="showOp(row)"
             @mouseleave="cancelShowOp(row)"
           >
+          <!-- 下面行为预览展示框 -->
             <template
-              v-if="
-                (row.fileType == 3 || row.fileType == 1) && row.status !== 0
-              "
+              v-if="(row.fileType == 3 || row.fileType == 1) && row.status !== 0"
             >
               <icon :cover="row.fileCover"></icon>
             </template>
+            <!-- 下面template为图标 -->
             <template v-else>
               <icon v-if="row.folderType == 0" :fileType="row.fileType"></icon>
               <icon v-if="row.folderType == 1" :fileType="0"></icon>
@@ -58,11 +58,11 @@
             </span>
           </div>
         </template>
-        <template #fileSize="{ index, row }">
+        <template #file_size="{ index, row }">
           <span v-if="row.fileSize">
             {{ proxy.Utils.size2Str(row.fileSize) }}</span
           >
-        </template> -->
+        </template>
       </Table>
     </div>
   </div>
@@ -93,7 +93,7 @@ const columns = [
   {
     label: "文件名",
     prop: "file_name",
-    // scopedSlots: "fileName",
+    scopedSlots: "file_name",
   },
   {
     label: "删除时间",
@@ -103,7 +103,7 @@ const columns = [
   {
     label: "大小",
     prop: "size",
-    // scopedSlots: "fileSize",
+    scopedSlots: "file_size",
     width: 200,
   },
 ];
@@ -142,8 +142,20 @@ const loadDataList = async () => {
       page_no: tableData.value.page_no,
       page_size: tableData.value.page_size
     })
-    if (response.data.status_code == proxy.Status.success) {
-      tableData.value = response.data.data;
+    if(response.data.status_code==proxy.Status.success){
+      const p = response.data.data;
+      p.list.forEach((element)=>{
+        element.fileName = element.file_name;
+        element.folderType = element.is_dir == true ? 1:0;
+        element.fileType = element.type;
+        //下面解注释使文件预览
+        element.status = 0;
+        element.file_size = element.size;
+        
+      })
+      // tableData.value = response.data.data;
+      tableData.value = p;
+      console.log(p);
       // console.log(tableData.value.data);
       // editing.value = false;
     }
