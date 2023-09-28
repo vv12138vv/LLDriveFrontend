@@ -86,7 +86,8 @@
             >
               <icon :cover="row.fileCover" :width="32"></icon>
             </template>
-            <template v-else>
+            <template v-else> 
+            <!-- <template> -->
               <icon v-if="row.folderType == 0" :fileType="row.fileType"></icon>
               <icon v-if="row.folderType == 1" :fileType="0"></icon>
             </template>
@@ -120,8 +121,9 @@
               ></span>
             </div>
             <span class="op">
-              <template v-if="row.showOp && row.fileId && row.status == 2">
-                <span class="iconfont icon-share1" @click="share(row)"
+              <!-- <template v-if="row.showOp && row.fileId && row.status == 2"> -->
+                <template v-if="row.showOp && row.fileId">
+                <!-- <span class="iconfont icon-share1" @click="share(row)"
                   >分享</span
                 >
                 <span
@@ -132,15 +134,15 @@
                 >
                 <span class="iconfont icon-del" @click="delFile(row)"
                   >删除</span
-                >
+                > -->
                 <span
                   class="iconfont icon-edit"
                   @click.stop="editFileName(index)"
                   >重命名</span
                 >
-                <span class="iconfont icon-move" @click="moveFolder(row)"
+                <!-- <span class="iconfont icon-move" @click="moveFolder(row)"
                   >移动</span
-                >
+                > -->
               </template>
             </span>
           </div>
@@ -321,6 +323,9 @@ const loadDataList = async () => {
         //下面解注释使文件预览
         // element.status = 2;
         element.file_size = element.size;
+        element.fileId = element.user_file_id;
+        element.showOp = true;
+        // element.fileCover = 
         
       })
 
@@ -418,8 +423,7 @@ const saveNameEdit = async (index) => {
       dir_name: fileNameReal,
       dir_id: filePid,
     })
-    
-
+  
   console.log(fileNameReal);
   tableData.value.list[index].fileName = fileNameReal;
   tableData.value.list[index].showEdit = false;
