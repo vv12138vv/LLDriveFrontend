@@ -144,7 +144,7 @@
           </div>
         </template>
         <template #file_size="{ index, row }">
-          <span v-if="row.fileSize > 0">
+          <span v-if="row.fileSize >= 0">
            <!-- {{row.file_size}} -->
             {{ proxy.Utils.size2Str(row.fileSize) }}
           </span>
