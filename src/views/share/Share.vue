@@ -4,9 +4,9 @@
       <el-button
         type="primary"
         :disabled="selectIdList.length == 0"
-        @click="cancelShareBatch"
+        @click="saveBatch"
       >
-        <span class="iconfont icon-cancel"></span>取消分享
+        <span class="iconfont icon-revert"></span>保存到我的网盘
       </el-button>
     </div>
     <div class="file-list">
@@ -18,7 +18,7 @@
         :options="tableOptions"
         @rowSelected="rowSelected"
       >
-        <template #fileName="{ index, row }">
+        <template #file_name="{ index, row }">
           <div
             class="file-item"
             @mouseenter="showOp(row)"
@@ -54,7 +54,7 @@
             </span>
           </div>
         </template>
-        <template #expireTime="{ index, row }">
+        <template #expire_time="{ index, row }">
           {{ row.validType == 3 ? "永久" : row.expireTime }}
         </template>
       </Table>
@@ -80,29 +80,29 @@ const instance = axios.create({
 //   cancelShare: "/share/cancelShare",
 // };
 
-const shareUrl = ref(document.location.origin + "/share/");
+// const shareUrl = ref(document.location.origin + "/share/");
 
 //列表
 const columns = [
   {
     label: "文件名",
-    prop: "fileName",
-    scopedSlots: "fileName",
+    prop: "file_name",
+    scopedSlots: "file_name",
   },
   {
     label: "分享时间",
-    prop: "shareTime",
+    prop: "share_time",
     width: 200,
   },
   {
     label: "失效时间",
-    prop: "expireTime",
-    scopedSlots: "expireTime",
+    prop: "expire_time",
+    scopedSlots: "expire_time",
     width: 200,
   },
   {
-    label: "浏览次数",
-    prop: "showCount",
+    label: "分享次数",
+    prop: "shared_count",
     width: 200,
   },
 ];
@@ -112,46 +112,42 @@ const search = () => {
   loadDataList();
 };
 //列表
-const tableData = ref({});
+const tableData = ref({ page_no: 1, page_size: 15 });
 const tableOptions = {
   extHeight: 20,
   selectType: "checkbox",
 };
+const userInfo = ref(
+  proxy.VueCookies.get("userInfo")
+);
 
-// const loadDataList = async () => {
-//   console.log('loadDataList called');
-//   let params = {
-//     pageNo: tableData.value.pageNo,
-//     pageSize: tableData.value.pageSize,
-//   };
-//   if (params.category !== "all") {
-//     delete params.filePid;
-//   }
-//   let result = await proxy.Request({
-//     url: api.loadDataList,
-//     params,
-//   });
-//   if (!result) {
-//     return;
-//   }
-//   tableData.value = result.data;
-// };
+
 const loadDataList = async () => {
   console.log('loadDataList called');
-  let params = {
-    pageNo: tableData.value.pageNo,
-    pageSize: tableData.value.pageSize,
-  };
-  if (params.category !== "all") {
-    delete params.filePid;
-  }
-  // let result = await proxy.Request({
-  //   url: api.loadDataList,
-  //   params,
-  // });
   try {
-    let response = await instance.get('/api/share/list');
-    tableData.value = response.data.data;
+    let response = await instance.get('/api/share/list',{
+      params:{
+        page_no: tableData.value.page_no,
+        page_size:  tableData.value.page_size,
+      }
+    });
+    if(response.data.status_code==proxy.Status.success){
+      const p = response.data.data;
+      p.list.forEach((element)=>{
+        element.fileName = element.file_name;
+        element.folderType = element.is_dir == true ? 1:0;
+        element.fileType = element.type;
+        //下面解注释使文件预览
+        element.status = 0;
+        element.fileSize = element.size;
+        element.expireTime=element.expire_time;
+      })
+      // tableData.value = response.data.data;
+      tableData.value = p;
+      console.log(p);
+      // console.log(tableData.value.data);
+      // editing.value = false;
+    }
   } catch (error) {
     console.log(error);
   }
@@ -183,24 +179,49 @@ const selectIdList = ref([]);
 const rowSelected = (rows) => {
   selectIdList.value = [];
   rows.forEach((item) => {
-    selectIdList.value.push(item.shareId);
+    selectIdList.value.push(item.shared_id);
+    // console.log(item.shared_id);
   });
 };
 
 //取消分享
 const cancelShareIdList = ref([]);
-const cancelShareBatch = () => {
-  if (selectIdList.value.length == 0) {
+// const cancelShareBatch = () => {
+//   if (selectIdList.value.length == 0) {
+//     return;
+//   }
+//   cancelShareIdList.value = selectIdList.value;
+//   cancelShareDone();
+// };
+const saveBatch = async () => {
+  if (selectIdList.value.length === 0) {
     return;
   }
-  cancelShareIdList.value = selectIdList.value;
-  cancelShareDone();
+  try {
+    const confirmed = window.confirm("你确定要转存这些文件吗？");
+    if (!confirmed) {
+      return;
+    }
+    for(const shared_id of selectIdList.value){
+      const result = await instance.post('/api/share/save',{
+        shared_id: shared_id,
+        username: userInfo.value.nickName,
+        dir_id: ""
+      })
+      if (!result) {
+        return;
+      }
+    }
+    loadDataList();
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-const cancelShare = (row) => {
-  cancelShareIdList.value = [row.shareId];
-  cancelShareDone();
-};
+// const cancelShare = (row) => {
+//   cancelShareIdList.value = [row.shareId];
+//   cancelShareDone();
+// };
 
 const cancelShareDone = async () => {
   proxy.Confirm(`你确定要取消分享吗？`, async () => {

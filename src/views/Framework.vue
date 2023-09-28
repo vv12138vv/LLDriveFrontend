@@ -243,7 +243,7 @@ const menus = [
     allShow: true,
     children: [
       {
-        name: "分享记录",
+        name: "分享大厅",
         path: "/myshare",
       },
     ],
