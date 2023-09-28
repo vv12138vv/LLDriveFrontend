@@ -90,6 +90,7 @@
         type: "primary",
         text: "确定",
         click: (e) => {
+          // console.log(e);
           share();
         },
       },
@@ -98,28 +99,29 @@
   
   const resultInfo = ref({});
   const share = async () => {
-    if (Object.keys(resultInfo.value).length > 0) {
-      dialogConfig.value.show = false;
-      return;
-    }
-    formDataRef.value.validate(async (valid) => {
-      if (!valid) {
-        return;
-      }
-      let params = {};
-      Object.assign(params, formData.value);
-      let result = await proxy.Request({
-        url: api.shareFile,
-        params: params,
-      });
-      if (!result) {
-        return;
-      }
-      showType.value = 1;
-      resultInfo.value = result.data;
-      dialogConfig.value.buttons[0].text = "关闭";
-      showCancel.value = false;
-    });
+    console.log("click share");
+    // if (Object.keys(resultInfo.value).length > 0) {
+    //   dialogConfig.value.show = false;
+    //   return;
+    // }
+    // formDataRef.value.validate(async (valid) => {
+    //   if (!valid) {
+    //     return;
+    //   }
+    //   let params = {};
+    //   Object.assign(params, formData.value);
+    //   let result = await proxy.Request({
+    //     url: api.shareFile,
+    //     params: params,
+    //   });
+    //   if (!result) {
+    //     return;
+    //   }
+    //   showType.value = 1;
+    //   resultInfo.value = result.data;
+    //   dialogConfig.value.buttons[0].text = "关闭";
+    //   showCancel.value = false;
+    // });
   };
   
   const show = (data) => {
