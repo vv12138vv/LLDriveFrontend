@@ -308,8 +308,10 @@ const loadDataList = async () => {
   try{
     let response = await instance.post('/api/files/list',{
       username: userInfo.value.nickName,
-      dir_id: "",
-      type: "",
+      // dir_id: "",
+      dir_id:currentFolder.value.user_file_id,
+      // type: "",
+      type: 0,
       file_name: fileNameFuzzy.value,
       page_no: tableData.value.page_no,
       page_size: tableData.value.page_size
@@ -394,7 +396,7 @@ const cancelNameEdit = (index) => {
 };
 
 const saveNameEdit = async (index) => {
-  const { fileId, filePid, fileNameReal } = tableData.value.list[index];
+  const { fileId, filePid, fileNameReal,fileSuffix } = tableData.value.list[index];
   if (fileNameReal == "" || fileNameReal.indexOf("/") != -1) {
     proxy.Message.warning("文件名不能为空且不能含有斜杠");
     return;
@@ -416,18 +418,35 @@ const saveNameEdit = async (index) => {
   // }
   // tableData.value.list[index] = result.data;
   // const dirid = filePid == ""?null:filePid;
+  console.log("fileId: "+fileId);
+  console.log("suffix: "+fileSuffix);
+
+  if(fileId == ""){
     let response = await instance.post('/api/files/mkdir',{
       username: userInfo.value.nickName,
       dir_name: fileNameReal,
       dir_id: filePid,
     })
   
-  console.log(fileNameReal);
   tableData.value.list[index].fileName = fileNameReal;
   tableData.value.list[index].showEdit = false;
   tableData.value.list[index].status = 2;
   tableData.value.list[index].folderType = 1;
-  tableData.value.list[index].fileid = "";
+  // tableData.value.list[index].fileid = "";
+  }else{
+    let response = await instance.get('/api/files/rename',{
+      params:{
+          user_file_id: fileId,
+          new_name: fileNameReal+fileSuffix,
+      }
+    })
+    tableData.value.list[index].fileName = fileNameReal+fileSuffix;
+    tableData.value.list[index].showEdit = false;
+    // tableData.value.list[index].status = 2;
+    tableData.value.list[index].folderType = 0;
+    // tableData.value.list[index].fileid = "";
+  }
+    
   editing.value = false;
 };
 
