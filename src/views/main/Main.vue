@@ -76,9 +76,8 @@
       <!-- @mouseenter="showOp(row)"
             @mouseleave="cancelShowOp(row)" -->
         <template #file_name="{ index, row }">
-          <div
-            class="file-item"
-          >
+          <!-- <div class="file-item"> -->
+          <div class="file-item" @mouseenter="showOp(row)" @mouseleave="cancelShowOp(row)">
             <template
               v-if="(row.fileType == 3 || row.fileType == 1) && row.status == 2"
             >
@@ -342,17 +341,17 @@ const loadDataList = async () => {
 console.debug("debug"+route.params.myParameter);
 
 
-//展示操作按钮
-// const showOp = (row) => {
-//   tableData.value.list.forEach((element) => {
-//     element.showOp = false;
-//   });
-//   row.showOp = true;
-// };
+// 展示操作按钮
+const showOp = (row) => {
+  tableData.value.list.forEach((element) => {
+    element.showOp = false;
+  });
+  row.showOp = true;
+};
 
-// const cancelShowOp = (row) => {
-//   row.showOp = false;
-// };
+const cancelShowOp = (row) => {
+  row.showOp = false;
+};
 
 //编辑行
 const editing = ref(false);
