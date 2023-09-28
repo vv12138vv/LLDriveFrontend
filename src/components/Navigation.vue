@@ -79,8 +79,10 @@ const openFolder = (data) => {
     file_name: file_name,
     user_file_id: user_file_id,
   };
+  // console.log(folder)
   folderList.value.push(folder);
   currentFolder.value = folder;
+  // console.log(folderList.value);
   setPath();
 };
 
@@ -90,7 +92,8 @@ defineExpose({ openFolder, init });
 const backParent = () => {
   let currentIndex = null;
   for (let i = 0; i < folderList.value.length; i++) {
-    if (folderList.value[i].fileId == currentFolder.value.fileId) {
+    // if (folderList.value[i].fileId == currentFolder.value.fileId) {
+    if (folderList.value[i].user_file_id == currentFolder.value.user_file_id) {
       currentIndex = i;
       break;
     }
@@ -102,7 +105,8 @@ const backParent = () => {
 const setCurrentFolder = (index) => {
   if (index == -1) {
     //返回全部
-    currentFolder.value = { fileId: "0" };
+    // currentFolder.value = { fileId: "0" };
+    currentFolder.value = { user_file_id: "" };
     folderList.value = [];
   } else {
     currentFolder.value = folderList.value[index];
@@ -119,8 +123,10 @@ const setPath = () => {
   }
   let pathArray = [];
   folderList.value.forEach((item) => {
-    pathArray.push(item.fileId);
+    // pathArray.push(item.fileId);
+    pathArray.push(item.user_file_id);
   });
+  console.log(pathArray);
   router.push({
     path: route.path,
     query:
@@ -149,18 +155,23 @@ const getNavigationFolder = async (path) => {
   //     shareId: props.shareId,
   //   },
   // });
+
+
+
+
   try{
     let result = await isntance.post('/api/files/list',{
       username: userInfo.value.nickName,
-      dir_id: "",
-      type: "",
-      page_no: "",
-      page_size: "",
+      dir_id: currentFolder.value.user_file_id,
+      type: 0,
+      page_no: 1,
+      page_size: 15,
+      file_name: currentFolder.value.file_name
     })
       if (!result) {
       return;
     }
-    folderList.value = result.data;
+    folderList.value = result.data.data.list;
     }catch(error){
       console.log(error);
     }
@@ -189,7 +200,9 @@ watch(
       return;
     }
     const path = newVal.query.path;
+    console.log("path: "+path);
     const categoryId = newVal.params.category;
+    console.log("catagoryId: "+categoryId);
     category.value = categoryId;
     if (path == undefined) {
       init();
@@ -198,7 +211,8 @@ watch(
       //设置当前目录
       let pathArray = path.split("/");
       currentFolder.value = {
-        fileId: pathArray[pathArray.length - 1],
+        // fileId: pathArray[pathArray.length - 1],
+        user_file_id: pathArray[pathArray.length - 1],
       };
       doCallback();
     }
@@ -206,6 +220,9 @@ watch(
   { immediate: true, deep: true }
 );
 </script>
+
+
+
 
 <style lang="scss" scoped>
 .top-navigation {
