@@ -165,10 +165,7 @@ const instance = axios.create({
 })
 const parentType=ref({type: 0});
 
-// const api = {
-//   getUseSpace: "/getUseSpace",
-//   logout: "/logout",
-// };
+
 
 //显示上传窗口
 const showUploader = ref(false);
@@ -350,16 +347,7 @@ const getUseSpace = async()=>{
     useSpaceInfo.value.totalSpace = response2.data.data.max_capacity;
     // console.log(useSpaceInfo);
 }
-// const getUseSpace = async () => {
-//   let result = await proxy.Request({
-//     url: api.getUseSpace,
-//     showLoading: false,
-//   });
-//   if (!result) {
-//     return;
-//   }
-//   useSpaceInfo.value = result.data;
-// };
+
 getUseSpace();
 </script>
 

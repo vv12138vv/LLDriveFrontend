@@ -557,8 +557,8 @@ const downloadFile = async () => {
       const downloadLink = document.createElement('a');
       const dispositionHeader = response.headers['content-disposition'];
       const fileName = dispositionHeader
-        ? dispositionHeader.split('filename=')[1].replace(/"/g, '')
-        : 'file';
+    ? decodeURIComponent(dispositionHeader.split('filename=')[1].replace(/"/g, ''))
+    : 'file';
       downloadLink.href = window.URL.createObjectURL(response.data);
       downloadLink.download = fileName;
       downloadLink.click();
@@ -658,9 +658,12 @@ const download = async (row) => {
       console.log(response);
       const downloadLink = document.createElement('a');
       const dispositionHeader = response.headers['content-disposition'];
+      // const fileName = dispositionHeader
+      //   ? dispositionHeader.split('filename=')[1].replace(/"/g, '')
+      //   : 'file';
       const fileName = dispositionHeader
-        ? dispositionHeader.split('filename=')[1].replace(/"/g, '')
-        : 'file';
+    ? decodeURIComponent(dispositionHeader.split('filename=')[1].replace(/"/g, ''))
+    : 'file';
       downloadLink.href = window.URL.createObjectURL(response.data);
       downloadLink.download = fileName;
       downloadLink.click();
