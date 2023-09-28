@@ -78,16 +78,13 @@
         <template #file_name="{ index, row }">
           <div
             class="file-item"
-            
           >
-         
             <template
               v-if="(row.fileType == 3 || row.fileType == 1) && row.status == 2"
             >
               <icon :cover="row.fileCover" :width="32"></icon>
             </template>
             <template v-else> 
-            <!-- <template> -->
               <icon v-if="row.folderType == 0" :fileType="row.fileType"></icon>
               <icon v-if="row.folderType == 1" :fileType="0"></icon>
             </template>
@@ -121,9 +118,9 @@
               ></span>
             </div>
             <span class="op">
-              <!-- <template v-if="row.showOp && row.fileId && row.status == 2"> -->
+              <template v-if="row.showOp && row.fileId && row.status == 2">
                 <template v-if="row.showOp && row.fileId">
-                <!-- <span class="iconfont icon-share1" @click="share(row)"
+                <span class="iconfont icon-share1" @click="share(row)"
                   >分享</span
                 >
                 <span
@@ -134,15 +131,16 @@
                 >
                 <span class="iconfont icon-del" @click="delFile(row)"
                   >删除</span
-                > -->
+                >
                 <span
                   class="iconfont icon-edit"
                   @click.stop="editFileName(index)"
                   >重命名</span
                 >
-                <!-- <span class="iconfont icon-move" @click="moveFolder(row)"
+                <span class="iconfont icon-move" @click="moveFolder(row)"
                   >移动</span
-                > -->
+                >
+                </template>
               </template>
             </span>
           </div>
@@ -323,7 +321,7 @@ const loadDataList = async () => {
         element.folderType = element.is_dir == true ? 1:0;
         element.fileType = element.type;
         //下面解注释使文件预览,该页面中status为2时为预览
-        // element.status = 2;
+        element.status = 2;
         element.fileSize = element.size;
         element.fileId = element.user_file_id;
         element.showOp = true;
@@ -494,22 +492,26 @@ const rowSelected = (rows) => {
 };
 
 //删除文件
-const delFile = (row) => {
-  proxy.Confirm(
-    `你确定要删除【${row.fileName}】吗？删除的文件可在10天内通过回收站还原`,
-    async () => {
-      let result = await proxy.Request({//api
-        url: api.delFile,
-        params: {
-          fileIds: row.fileId,
-        },
-      });
-      if (!result) {
-        return;
-      }
-      loadDataList();
+const delFile = async (row) => {
+  const user_file_id=row.user_file_id;
+  try {
+    const confirmed = window.confirm("你确定要删除该文件吗?删除的文件可在10天内通过回收站还原");
+    if (!confirmed) {
+      return;
     }
-  );
+    const result = await instance.get('/api/files/delete',{
+      params: {
+        user_file_id: user_file_id,
+        username: userInfo.value.nickName
+      }
+    })
+    if (!result) {
+      return;
+    }
+    loadDataList();
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 //批量删除
@@ -644,15 +646,29 @@ const navChange = (data) => {
 };
 
 //下载文件
-// const download = async (row) => {
-//   let result = await proxy.Request({//下载文件
-//     url: api.createDownloadUrl + "/" + row.fileId,
-//   });
-//   if (!result) {
-//     return;
-//   }
-//   window.location.href = api.download + "/" + result.data;
-// };
+const download = async (row) => {
+  const user_file_id=row.user_file_id;
+  try {
+      console.log(user_file_id);
+      const response = await instance.get('/api/transfers/download', {
+        params: {
+          user_file_id: user_file_id,
+        },
+        responseType: 'blob',
+      });
+      console.log(response);
+      const downloadLink = document.createElement('a');
+      const dispositionHeader = response.headers['content-disposition'];
+      const fileName = dispositionHeader
+        ? dispositionHeader.split('filename=')[1].replace(/"/g, '')
+        : 'file';
+      downloadLink.href = window.URL.createObjectURL(response.data);
+      downloadLink.download = fileName;
+      downloadLink.click();
+    } catch (error) {
+      console.log(error);
+    }
+};
 
 
 //分享
