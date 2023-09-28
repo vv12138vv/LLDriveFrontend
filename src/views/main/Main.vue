@@ -30,7 +30,7 @@
           :disabled="selectFileIdList.length == 0"
         >
           <!-- <span class="iconfont icon-del"></span> -->
-          批量删除
+          删除
         </el-button>
         <el-button
           @click="moveFolderBatch"
@@ -148,9 +148,9 @@
           </div>
         </template>
         <template #file_size="{ index, row }">
-          <span v-if="row.file_size > 0">
+          <span v-if="row.fileSize > 0">
            <!-- {{row.file_size}} -->
-            {{ proxy.Utils.size2Str(row.file_size) }}
+            {{ proxy.Utils.size2Str(row.fileSize) }}
           </span>
         </template>
       </Table>
@@ -320,16 +320,14 @@ const loadDataList = async () => {
         element.fileName = element.file_name;
         element.folderType = element.is_dir == true ? 1:0;
         element.fileType = element.type;
-        //下面解注释使文件预览
+        //下面解注释使文件预览,该页面中status为2时为预览
         // element.status = 2;
-        element.file_size = element.size;
+        element.fileSize = element.size;
         element.fileId = element.user_file_id;
         element.showOp = true;
         // element.fileCover = 
         
       })
-
-
       // tableData.value = response.data.data;
       tableData.value = p;
       console.log(p);

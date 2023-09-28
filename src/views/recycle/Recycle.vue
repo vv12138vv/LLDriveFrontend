@@ -13,7 +13,7 @@
         :disabled="selectFileIdList.length == 0"
         @click="delBatch"
       >
-        <span class="iconfont icon-del"></span>批量删除
+        <span class="iconfont icon-del"></span>删除
       </el-button>
     </div>
 
@@ -26,19 +26,19 @@
         :options="tableOptions"
         @rowSelected="rowSelected"
       >
-        <!-- <template #fileName="{ index, row }">
+        <template #file_name="{ index, row }">
           <div
             class="file-item"
             @mouseenter="showOp(row)"
             @mouseleave="cancelShowOp(row)"
           >
+          <!-- 下面行为预览展示框 -->
             <template
-              v-if="
-                (row.fileType == 3 || row.fileType == 1) && row.status !== 0
-              "
+              v-if="(row.fileType == 3 || row.fileType == 1) && row.status !== 0"
             >
               <icon :cover="row.fileCover"></icon>
             </template>
+            <!-- 下面template为图标 -->
             <template v-else>
               <icon v-if="row.folderType == 0" :fileType="row.fileType"></icon>
               <icon v-if="row.folderType == 1" :fileType="0"></icon>
@@ -58,11 +58,11 @@
             </span>
           </div>
         </template>
-        <template #fileSize="{ index, row }">
-          <span v-if="row.fileSize">
+        <template #file_size="{ index, row }">
+          <span v-if="row.fileSize>0">
             {{ proxy.Utils.size2Str(row.fileSize) }}</span
           >
-        </template> -->
+        </template>
       </Table>
     </div>
   </div>
@@ -93,7 +93,7 @@ const columns = [
   {
     label: "文件名",
     prop: "file_name",
-    // scopedSlots: "fileName",
+    scopedSlots: "file_name",
   },
   {
     label: "删除时间",
@@ -103,7 +103,7 @@ const columns = [
   {
     label: "大小",
     prop: "size",
-    // scopedSlots: "fileSize",
+    scopedSlots: "file_size",
     width: 200,
   },
 ];
@@ -142,8 +142,20 @@ const loadDataList = async () => {
       page_no: tableData.value.page_no,
       page_size: tableData.value.page_size
     })
-    if (response.data.status_code == proxy.Status.success) {
-      tableData.value = response.data.data;
+    if(response.data.status_code==proxy.Status.success){
+      const p = response.data.data;
+      p.list.forEach((element)=>{
+        element.fileName = element.file_name;
+        element.folderType = element.is_dir == true ? 1:0;
+        element.fileType = element.type;
+        //下面解注释使文件预览
+        element.status = 0;
+        element.fileSize = element.size;
+        
+      })
+      // tableData.value = response.data.data;
+      tableData.value = p;
+      console.log(p);
       // console.log(tableData.value.data);
       // editing.value = false;
     }
@@ -251,23 +263,48 @@ const delFile = (row) => {
   });
 };
 
-const delBatch = (row) => {
-  if (selectFileIdList.value.length == 0) {
+// const delBatch = (row) => {
+//   if (selectFileIdList.value.length == 0) {
+//     return;
+//   }
+//   proxy.Confirm(`你确定要删除选中的文件?删除将无法恢复`, async () => {
+//     let result = await proxy.Request({
+//       url: api.delFile,
+//       params: {
+//         fileIds: selectFileIdList.value.join(","),
+//       },
+//     });
+//     if (!result) {
+//       return;
+//     }
+//     loadDataList();
+//     emit("reload");
+//   });
+// };
+const delBatch = async () => {
+  if (selectFileIdList.value.length === 0) {
     return;
   }
-  proxy.Confirm(`你确定要删除选中的文件?删除将无法恢复`, async () => {
-    let result = await proxy.Request({
-      url: api.delFile,
-      params: {
-        fileIds: selectFileIdList.value.join(","),
-      },
-    });
-    if (!result) {
+  try {
+    const confirmed = window.confirm("你确定要彻底删除这些文件吗？该操作无法复原。");
+    if (!confirmed) {
       return;
     }
+    for(const user_file_id of selectFileIdList.value){
+      const result = await instance.get('/api/files/recycle/delete',{
+        params: {
+          user_file_id: user_file_id,
+          username: userInfo.value.nickName
+        }
+      })
+      if (!result) {
+        return;
+      }
+    }
     loadDataList();
-    emit("reload");
-  });
+  } catch (error) {
+    console.log(error);
+  }
 };
 </script>
 
