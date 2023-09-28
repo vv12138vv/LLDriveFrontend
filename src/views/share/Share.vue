@@ -6,7 +6,7 @@
         :disabled="selectIdList.length == 0"
         @click="saveBatch"
       >
-        <span class="iconfont icon-revert"></span>保存到我的网盘
+        <span class="iconfont icon-share1"></span>保存到我的网盘
       </el-button>
     </div>
     <div class="file-list">
@@ -46,9 +46,6 @@
               <template v-if="row.showOp && row.fileId">
                 <span class="iconfont icon-link" @click="copy(row)"
                   >复制链接</span
-                >
-                <span class="iconfont icon-cancel" @click="cancelShare(row)"
-                  >取消分享</span
                 >
               </template>
             </span>
