@@ -72,11 +72,13 @@
         @rowSelected="rowSelected"
       >
      
+
+      <!-- @mouseenter="showOp(row)"
+            @mouseleave="cancelShowOp(row)" -->
         <template #file_name="{ index, row }">
           <div
             class="file-item"
-            @mouseenter="showOp(row)"
-            @mouseleave="cancelShowOp(row)"
+            
           >
          
             <template
@@ -204,13 +206,15 @@ const instance = axios.create({
 });
 
 const currentFolder = ref({user_file_id: ""});
+// const currentFolder = ref({fileId: 0});
 
 const userInfo = ref(
   proxy.VueCookies.get("userInfo")
 );
 //添加文件
 const addFile = async (fileData) => {
-  emit("addFile", { file: fileData.file, filePid: currentFolder.value.fileId });
+  // emit("addFile", { file: fileData.file, filePid: currentFolder.value.fileId });
+  emit("addFile", { file: fileData.file, filePid: currentFolder.value.user_file_id });
 };
 
 
@@ -365,7 +369,9 @@ const newFolder = () => {
     showEdit: true,
     fileType: 0,
     fileId: "",
-    filePid: currentFolder.value.fileId,
+    // filePid: currentFolder.value.fileId,
+    filePid: currentFolder.value.user_file_id,
+    fileName: "",
     // fileNameReal: "nnn",
   });
   console.log(tableData.value.list);
@@ -390,22 +396,36 @@ const saveNameEdit = async (index) => {
     proxy.Message.warning("文件名不能为空且不能含有斜杠");
     return;
   }
-  let url = api.rename;
-  if (fileId == "") {
-    url = api.newFoloder;
-  }
-  let result = await proxy.Request({//api
-    url: url,
-    params: {
-      fileId,
-      filePid: filePid,
-      fileName: fileNameReal,
-    },
-  });
-  if (!result) {
-    return;
-  }
-  tableData.value.list[index] = result.data;
+  // let url = api.rename;
+  // if (fileId == "") {
+  //   url = api.newFoloder;
+  // }
+  // let result = await proxy.Request({//api
+  //   url: url,
+  //   params: {
+  //     fileId,
+  //     filePid: filePid,
+  //     fileName: fileNameReal,
+  //   },
+  // });
+  // if (!result) {
+  //   return;
+  // }
+  // tableData.value.list[index] = result.data;
+  // const dirid = filePid == ""?null:filePid;
+    let response = await instance.post('/api/files/mkdir',{
+      username: userInfo.value.nickName,
+      dir_name: fileNameReal,
+      dir_id: filePid,
+    })
+    
+
+  console.log(fileNameReal);
+  tableData.value.list[index].fileName = fileNameReal;
+  tableData.value.list[index].showEdit = false;
+  tableData.value.list[index].status = 2;
+  tableData.value.list[index].folderType = 1;
+  tableData.value.list[index].fileid = "";
   editing.value = false;
 };
 
@@ -538,7 +558,8 @@ const moveFolder = (data) => {
 const moveFolderBatch = () => {
   currentMoveFile.value = {};
   //批量移动如果选择的是文件夹，那么要讲文件夹也过滤
-  const excludeFileIdList = [currentFolder.value.fileId];
+  // const excludeFileIdList = [currentFolder.value.fileId];
+  const excludeFileIdList = [currentFolder.value.user_file_id];
   selectFileList.value.forEach((item) => {
     if (item.folderType == 1) {
       excludeFileIdList.push(item.fileId);
@@ -550,7 +571,8 @@ const moveFolderBatch = () => {
 const moveFolderDone = async (folderId) => {
   if (
     currentMoveFile.value.filePid === folderId ||
-    currentFolder.value.fileId == folderId
+    // currentFolder.value.fileId == folderId
+    currentFolder.value.user_file_id == folderId
   ) {
     proxy.Message.warning("文件正在当前目录，无需移动");
     return;
@@ -577,18 +599,19 @@ const moveFolderDone = async (folderId) => {
 
 const previewRef = ref();
 const navigationRef = ref();
-// const preview = (data) => {
-//   if (data.folderType == 1) {
-//     //openFolder(data);
-//     navigationRef.value.openFolder(data);
-//     return;
-//   }
-//   if (data.status != 2) {
-//     proxy.Message.warning("文件正在转码中，无法预览");
-//     return;
-//   }
-//   previewRef.value.showPreview(data, 0);
-// };
+
+const preview = (data) => {
+  if (data.folderType == 1) {
+    //openFolder(data);
+    navigationRef.value.openFolder(data);
+    return;
+  }
+  if (data.status != 2) {
+    proxy.Message.warning("文件正在转码中，无法预览");
+    return;
+  }
+  previewRef.value.showPreview(data, 0);
+};
 
 //目录
 const navChange = (data) => {
