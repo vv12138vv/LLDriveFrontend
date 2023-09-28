@@ -30,7 +30,7 @@
           :disabled="selectFileIdList.length == 0"
         >
           <!-- <span class="iconfont icon-del"></span> -->
-          批量删除
+          删除
         </el-button>
         <el-button
           @click="moveFolderBatch"

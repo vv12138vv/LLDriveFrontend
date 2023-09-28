@@ -13,7 +13,7 @@
         :disabled="selectFileIdList.length == 0"
         @click="delBatch"
       >
-        <span class="iconfont icon-del"></span>批量删除
+        <span class="iconfont icon-del"></span>删除
       </el-button>
     </div>
 
@@ -251,23 +251,48 @@ const delFile = (row) => {
   });
 };
 
-const delBatch = (row) => {
-  if (selectFileIdList.value.length == 0) {
+// const delBatch = (row) => {
+//   if (selectFileIdList.value.length == 0) {
+//     return;
+//   }
+//   proxy.Confirm(`你确定要删除选中的文件?删除将无法恢复`, async () => {
+//     let result = await proxy.Request({
+//       url: api.delFile,
+//       params: {
+//         fileIds: selectFileIdList.value.join(","),
+//       },
+//     });
+//     if (!result) {
+//       return;
+//     }
+//     loadDataList();
+//     emit("reload");
+//   });
+// };
+const delBatch = async () => {
+  if (selectFileIdList.value.length === 0) {
     return;
   }
-  proxy.Confirm(`你确定要删除选中的文件?删除将无法恢复`, async () => {
-    let result = await proxy.Request({
-      url: api.delFile,
-      params: {
-        fileIds: selectFileIdList.value.join(","),
-      },
-    });
-    if (!result) {
+  try {
+    const confirmed = window.confirm("你确定要彻底删除这些文件吗？该操作无法复原。");
+    if (!confirmed) {
       return;
     }
+    for(const user_file_id of selectFileIdList.value){
+      const result = await instance.get('/api/files/recycle/delete',{
+        params: {
+          user_file_id: user_file_id,
+          username: userInfo.value.nickName
+        }
+      })
+      if (!result) {
+        return;
+      }
+    }
     loadDataList();
-    emit("reload");
-  });
+  } catch (error) {
+    console.log(error);
+  }
 };
 </script>
 
