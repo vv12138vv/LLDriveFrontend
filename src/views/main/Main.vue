@@ -79,7 +79,7 @@
           <!-- <div class="file-item"> -->
           <div class="file-item" @mouseenter="showOp(row)" @mouseleave="cancelShowOp(row)">
             <template
-              v-if="(row.fileType == 3 || row.fileType == 1) && row.status == 2"
+              v-if="(row.fileType == 3 || row.fileType == 1) && row.status == 3"
             >
               <icon :cover="row.fileCover" :width="32"></icon>
             </template>

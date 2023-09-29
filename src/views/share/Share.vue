@@ -26,7 +26,7 @@
           >
             <template
               v-if="
-                (row.fileType == 3 || row.fileType == 1) && row.status !== 0
+                (row.fileType == 3 || row.fileType == 1) && row.status == 3
               "
             >
               <icon :cover="row.fileCover"></icon>
