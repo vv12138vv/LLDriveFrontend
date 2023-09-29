@@ -49,21 +49,12 @@
                 >
               </template>
             </span> -->
-            <div>
+            <!-- <div> -->
               <span class="op">
                 <template v-if="row.showOp && row.fileId">
                   <span class="iconfont icon-share" @click="openDialog(row)">转存</span>
                 </template>
               </span>
-
-              <el-dialog v-model="dialogVisible" title="填写提取码" @close="dialogVisible = false">
-                <el-input v-model="extractCode" placeholder="请输入提取码"></el-input>
-                <span slot="footer" class="dialog-footer">
-                  <el-button @click="dialogVisible = false">取消</el-button>
-                  <el-button type="primary" @click="save">保存</el-button>
-                </span>
-              </el-dialog>
-            </div>
           </div>
         </template>
         <template #expire_time="{ index, row }">
@@ -71,6 +62,16 @@
         </template>
       </Table>
     </div>
+  </div>
+  <div v-if="dialogVisible" class="modal-overlay">
+    <!-- 对话框 -->
+    <el-dialog v-model="dialogVisible" title="填写提取码" @close="dialogVisible = false" :width="300">
+      <el-input v-model="extractCode" placeholder="请输入提取码" :maxLength="6" style="margin-bottom: 10%;"></el-input>
+      <span slot="footer" class="dialog-footer" style="display: flex;justify-content: center;">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="save">确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -150,7 +151,7 @@ const loadDataList = async () => {
         element.folderType = element.is_dir == true ? 1:0;
         element.fileType = element.type;
         //下面解注释使文件预览
-        element.status = 0;
+        element.status = 2;
         element.fileSize = element.size;
         element.expireTime=element.expire_time;
         element.fileId = element.shared_id;
@@ -270,7 +271,11 @@ const save = async () => {
     dir_id: "",
     code: extractCode.value
   })
-  if(!response.data.status_code==proxy.Status.success){
+  if(!(response.data.status_code==proxy.Status.success)){
+    proxy.Message.error("提取码错误");
+  }else{
+    proxy.Message.success("转存成功");
+
   }
   dialogVisible.value = false;
 };
@@ -315,5 +320,14 @@ const save = async () => {
       width: 170px;
     }
   }
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
 }
 </style>
