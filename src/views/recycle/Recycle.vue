@@ -15,7 +15,7 @@
         <template #file_name="{ index, row }">
           <div class="file-item" @mouseenter="showOp(row)" @mouseleave="cancelShowOp(row)">
             <!-- 下面行为预览展示框 -->
-            <template v-if="(row.fileType == 3 || row.fileType == 1) && row.status !== 0">
+            <template v-if="(row.fileType == 3 || row.fileType == 1) && row.status == 3">
               <icon :cover="row.fileCover"></icon>
             </template>
             <!-- 下面template为图标 -->

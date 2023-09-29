@@ -16,7 +16,7 @@
             </el-button>
           </el-upload>
         </div>
-        <el-button type="danger" @click="downloadFile">
+        <el-button type="danger" @click="downloadFile" :disabled="selectFileIdList.length == 0">
           <!-- <span class="iconfont icon-folder-add"></span> -->
           下载
         </el-button>
@@ -79,7 +79,7 @@
           <!-- <div class="file-item"> -->
           <div class="file-item" @mouseenter="showOp(row)" @mouseleave="cancelShowOp(row)">
             <template
-              v-if="(row.fileType == 3 || row.fileType == 1) && row.status == -100"
+              v-if="(row.fileType == 3 || row.fileType == 1) && row.status == 3"
             >
               <icon :cover="row.fileCover" :width="32"></icon>
             </template>
@@ -89,10 +89,10 @@
             </template>
             <span class="file-name" v-if="!row.showEdit" :title="row.fileName">
               <span @click="preview(row)">{{ row.fileName }}</span>
-              <span v-if="row.status == 0" class="transfer-status">转码中</span>
+              <!-- <span v-if="row.status == 0" class="transfer-status">转码中</span>
               <span v-if="row.status == 1" class="transfer-status transfer-fail"
                 >转码失败</span
-              >
+              > -->
             </span>
             <div class="edit-panel" v-if="row.showEdit == true">
               <el-input
@@ -119,7 +119,9 @@
             <span class="op">
               <template v-if="row.showOp && row.fileId && row.status == 2">
                 <template v-if="row.showOp && row.fileId">
-                <span class="iconfont icon-share1" @click="share(row)"
+                <span class="iconfont icon-share1" 
+                @click="share(row)"
+                v-if="row.folderType == 0"
                   >分享</span
                 >
                 <span
@@ -330,7 +332,7 @@ const loadDataList = async () => {
       })
       // tableData.value = response.data.data;
       tableData.value = p;
-      console.log(p);
+      // console.log(p);
       // console.log(tableData.value.data);
       editing.value = false;
     }
@@ -561,8 +563,8 @@ const downloadFile = async () => {
       const downloadLink = document.createElement('a');
       const dispositionHeader = response.headers['content-disposition'];
       const fileName = dispositionHeader
-        ? dispositionHeader.split('filename=')[1].replace(/"/g, '')
-        : 'file';
+    ? decodeURIComponent(dispositionHeader.split('filename=')[1].replace(/"/g, ''))
+    : 'file';
       downloadLink.href = window.URL.createObjectURL(response.data);
       downloadLink.download = fileName;
       downloadLink.click();
@@ -666,9 +668,12 @@ const download = async (row) => {
       console.log(response);
       const downloadLink = document.createElement('a');
       const dispositionHeader = response.headers['content-disposition'];
+      // const fileName = dispositionHeader
+      //   ? dispositionHeader.split('filename=')[1].replace(/"/g, '')
+      //   : 'file';
       const fileName = dispositionHeader
-        ? dispositionHeader.split('filename=')[1].replace(/"/g, '')
-        : 'file';
+    ? decodeURIComponent(dispositionHeader.split('filename=')[1].replace(/"/g, ''))
+    : 'file';
       downloadLink.href = window.URL.createObjectURL(response.data);
       downloadLink.download = fileName;
       downloadLink.click();

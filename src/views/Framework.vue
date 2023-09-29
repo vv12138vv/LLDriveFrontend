@@ -165,10 +165,7 @@ const instance = axios.create({
 })
 const parentType=ref({type: 0});
 
-// const api = {
-//   getUseSpace: "/getUseSpace",
-//   logout: "/logout",
-// };
+
 
 //显示上传窗口
 const showUploader = ref(false);
@@ -334,41 +331,24 @@ const logout = () => {
   proxy.Confirm(`你确定要退出吗`, async () => {
      proxy.VueCookies.remove("userInfo");
      router.push("/login");
-
-    // let result = await proxy.Request({
-    //   url: api.logout,
-    // });
-    // if (!result) {
-    //   return;
-    // }
-    // proxy.VueCookies.remove("userInfo");
-    // router.push("/login");
   });
 };
 
 //使用空间
 const useSpaceInfo = ref({ useSpace: userInfo.value.cur_capacity, totalSpace: userInfo.value.max_capacity });
-// const getUseSpace = async()=>{
-//   const response2 = await instance.get('/api/users/info', {
-//             headers: {
-//               'X-Token': userInfo.value.token,
-//             },
-//           });
-//     useSpaceInfo.value.useSpace = response2.data.data.cur_capacity;
-//     useSpaceInfo.value.totalSpace = response2.data.data.max_capacity;
-//     console.log(useSpaceInfo);
-// }
-// const getUseSpace = async () => {
-//   let result = await proxy.Request({
-//     url: api.getUseSpace,
-//     showLoading: false,
-//   });
-//   if (!result) {
-//     return;
-//   }
-//   useSpaceInfo.value = result.data;
-// };
-// getUseSpace();
+const getUseSpace = async()=>{
+  console.log("update user space");
+  const response2 = await instance.get('/api/users/info', {
+            headers: {
+              'X-Token': userInfo.value.token,
+            },
+          });
+    useSpaceInfo.value.useSpace = response2.data.data.cur_capacity;
+    useSpaceInfo.value.totalSpace = response2.data.data.max_capacity;
+    // console.log(useSpaceInfo);
+}
+
+getUseSpace();
 </script>
 
 <style lang="scss" scoped>

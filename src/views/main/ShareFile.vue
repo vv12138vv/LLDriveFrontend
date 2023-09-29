@@ -5,7 +5,7 @@
         :title="dialogConfig.title"
         :buttons="dialogConfig.buttons"
         width="600px"
-        :showCancel="showCancel"
+        :showCancel="false"
         @close="dialogConfig.show = false"
       >
         <el-form
@@ -19,37 +19,37 @@
           <template v-if="showType == 0">
             <el-form-item label="有效期" prop="validType">
               <el-radio-group v-model="formData.validType">
-                <el-radio :label="0">1天</el-radio>
-                <el-radio :label="1">7天</el-radio>
-                <el-radio :label="2">30天</el-radio>
-                <el-radio :label="3">永久有效</el-radio>
+                <el-radio :label="0">5分钟</el-radio>
+                <el-radio :label="1">2小时</el-radio>
+                <el-radio :label="2">1天</el-radio>
+                <el-radio :label="3">7天</el-radio>
               </el-radio-group>
             </el-form-item>
-            <!-- <el-form-item label="提取码" prop="codeType">
+            <el-form-item label="提取码" prop="codeType">
               <el-radio-group v-model="formData.codeType">
                 <el-radio :label="0">自定义</el-radio>
-                <el-radio :label="1">系统生成</el-radio>
+                <!-- <el-radio :label="1">系统生成</el-radio> -->
               </el-radio-group>
-            </el-form-item> -->
+            </el-form-item>
             <el-form-item prop="code" v-if="formData.codeType == 0">
               <el-input
                 clearable
-                placeholder="请输入5位提取码"
+                placeholder="请输入6位提取码"
                 v-model.trim="formData.code"
-                maxLength="5"
+                maxLength="6"
                 :style="{ width: '130px' }"
               ></el-input>
             </el-form-item>
           </template>
           <template v-else>
-            <el-form-item label="分享连接">
+            <!-- <el-form-item label="分享连接">
               {{ shareUrl }}{{ resultInfo.shareId }}
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="提取码">
               {{ resultInfo.code }}
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="copy">复制链接及提取码</el-button>
+              <el-button type="primary" @click="copy">复制提取码</el-button>
             </el-form-item>
           </template>
         </el-form>
@@ -62,12 +62,16 @@
   const { toClipboard } = useClipboard();
   import { ref, getCurrentInstance, nextTick } from "vue";
   const { proxy } = getCurrentInstance();
+  import axios from "axios";
   
-  const shareUrl = ref(document.location.origin + "/share/");
+  // const shareUrl = ref(document.location.origin + "/share/");
+  const instance = axios.create({
+    baseURL: 'http://localhost:8848'
+  })
   
-  const api = {
-    shareFile: "/share/shareFile",
-  };
+  // const api = {
+  //   shareFile: "/share/shareFile",
+  // };
   const showType = ref(0);
   const formData = ref({});
   const formDataRef = ref();
@@ -76,12 +80,13 @@
     codeType: [{ required: true, message: "请选择提取码类型" }],
     code: [
       { required: true, message: "请输入提取码" },
-      { validator: proxy.Verify.shareCode, message: "提取码只能是数字字母" },
-      { min: 5, message: "提取码最少5位" },
+      // { validator: proxy.Verify.shareCode, message: "提取码只能是数字字母" },
+      { min: 6, message: "提取码最少6位" },
     ],
   };
+
   
-  const showCancel = ref(true);
+  const showCancel = ref(false);
   const dialogConfig = ref({
     show: false,
     title: "分享",
@@ -98,34 +103,54 @@
   
   const resultInfo = ref({});
   const share = async () => {
-    if (Object.keys(resultInfo.value).length > 0) {
+    if (Object.keys(resultInfo.value).length != 0) {
       dialogConfig.value.show = false;
       return;
     }
-    formDataRef.value.validate(async (valid) => {
-      if (!valid) {
+    console.log(formData.value);
+
+    //   showType.value = 1;
+    //   resultInfo.value = result.data;
+    //   dialogConfig.value.buttons[0].text = "关闭";
+    //   showCancel.value = false;
+    // });
+    let expireTime = 0;
+    switch(formData.value.validType){
+      case(0):
+        expireTime=5;
+        break;
+      case(1):
+        expireTime=120;
+        break;
+      case(2):
+        expireTime=1440;
+        break;
+      case(3):
+        expireTime=10080;
+        break;
+    }
+    try{
+      let response = await instance.post('/api/share',{
+        user_file_id: formData.value.user_file_id,
+        code: formData.value.code,
+        expire_time: expireTime,
+      })
+      if(response.data.status_code != proxy.Status.success){
         return;
       }
-      let params = {};
-      Object.assign(params, formData.value);
-      let result = await proxy.Request({
-        url: api.shareFile,
-        params: params,
-      });
-      if (!result) {
-        return;
-      }
-      showType.value = 1;
-      resultInfo.value = result.data;
+      showType.value=1;
       dialogConfig.value.buttons[0].text = "关闭";
       showCancel.value = false;
-    });
+      resultInfo.value.code=response.data.data.code;
+    }catch(error){
+      console.log(error);
+    }
   };
   
   const show = (data) => {
     showCancel.value = true;
     dialogConfig.value.show = true;
-    showType.value = 0;
+    showType.value = 0;//用于判断两个页面,分享输入页面和结果展示页面
     resultInfo.value = {};
     nextTick(() => {
       formDataRef.value.resetFields();
@@ -137,11 +162,11 @@
   
   const copy = async () => {
     await toClipboard(
-      `链接:${shareUrl.value}${resultInfo.value.shareId} 提取码: ${resultInfo.value.code}`
+      // `链接:${shareUrl.value}${resultInfo.value.shareId} 提取码: ${resultInfo.value.code}`
+      `${resultInfo.value.code}`
     );
     proxy.Message.success("复制成功");
   };
-  let a=1;
   </script>
   
   <style lang="scss" scoped>
