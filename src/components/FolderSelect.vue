@@ -5,7 +5,7 @@
       :title="dialogConfig.title"
       :buttons="dialogConfig.buttons"
       width="600px"
-      :showCancel="true"
+      :showCancel="false"
       @close="close"
     >
       <div class="navigation-panel">

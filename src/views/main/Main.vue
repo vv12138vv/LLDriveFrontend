@@ -637,6 +637,8 @@ const preview = (data) => {
     //openFolder(data);
     navigationRef.value.openFolder(data);
     return;
+  }else{
+    return;
   }
   if (data.status != 2) {
     proxy.Message.warning("文件正在转码中，无法预览");
