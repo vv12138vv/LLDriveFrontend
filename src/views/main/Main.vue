@@ -299,8 +299,7 @@ const loadDataList = async () => {
       username: userInfo.value.nickName,
       // dir_id: "",
       dir_id:currentFolder.value.user_file_id,
-      // type: "",
-      type: 0,
+      type: "",
       file_name: fileNameFuzzy.value,
       page_no: tableData.value.page_no,
       page_size: tableData.value.page_size
