@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="top">
-      <el-button
+      <!-- <el-button
         type="primary"
         :disabled="selectIdList.length == 0"
         @click="saveBatch"
       >
         <span class="iconfont icon-share1"></span>保存到我的网盘
-      </el-button>
+      </el-button> -->
     </div>
     <div class="file-list">
       <Table
@@ -234,23 +234,6 @@ const saveBatch = async () => {
 
 // const save = async () => {
 //   try {
-//     const confirmed = window.confirm("你确定要转存该文件吗？");
-//     if (!confirmed) {
-//       return;
-//     }
-//     const result = await instance.post('/api/share/save',{
-//       shared_id: shared_id,
-//       username: userInfo.value.nickName,
-//       dir_id: ""
-//     })
-//     if (!result) {
-//       return;
-//     }
-//     loadDataList();
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
 
 const dialogVisible = ref(false); // 控制对话框的显示状态
 const extractCode = ref(''); // 用于存储提取码的变量
