@@ -637,7 +637,12 @@ const moveFolderDone = async (folderId) => {
   console.log(currentFolder.value.user_file_id);
   loadDataList();
 };
-
+const pathTypeMap = new Map([
+  ['folder',0],
+  ['video',1],
+  ['music',2],
+  ['image',3],
+])
 
 
 const previewRef = ref();
@@ -663,7 +668,7 @@ const navChange = (data) => {
   const { curFolder, categoryId } = data;
   currentFolder.value = curFolder;
   showLoading.value = true;
-  category.value = categoryId;
+  category.value=pathTypeMap.get(categoryId);
   loadDataList();
 };
 

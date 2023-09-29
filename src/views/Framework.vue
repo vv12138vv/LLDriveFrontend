@@ -74,10 +74,10 @@
             :class="['menu-item-sub', currentPath == sub.path ? 'active' : '']"
             v-for="sub in currentMenu.children"
           >
-            <!-- <span
+            <span
               :class="['iconfont', 'icon-' + sub.icon]"
               v-if="sub.icon"
-            ></span> -->
+            ></span>
             <span class="text">{{ sub.name }}</span>
           </div>
           <div class="tips" v-if="currentMenu && currentMenu.tips">
@@ -196,8 +196,14 @@ const menus = [
       {
         icon: "all",
         name: "全部",
-        category: "all",
+        category: "",
         path: "/main/all",
+      },
+      {
+        icon: "doc",
+        name: "目录",
+        category: "folder",
+        path: "/main/folder",
       },
       {
         icon: "video",
@@ -217,13 +223,6 @@ const menus = [
         category: "image",
         path: "/main/image",
       },
-      {
-        icon: "doc",
-        name: "目录",
-        // category: "doc",
-        category: "folder",
-        path: "/main/folder",
-      }
     ],
   },
   {
@@ -332,14 +331,14 @@ const logout = () => {
 const useSpaceInfo = ref({ useSpace: userInfo.value.cur_capacity, totalSpace: userInfo.value.max_capacity });
 const getUseSpace = async()=>{
   console.log("update user space");
-  // const response2 = await instance.get('/api/users/info', {
-  //           headers: {
-  //             'X-Token': userInfo.value.token,
-  //           },
-  //         });
-  //   useSpaceInfo.value.useSpace = response2.data.data.cur_capacity;
-  //   useSpaceInfo.value.totalSpace = response2.data.data.max_capacity;
-    // console.log(useSpaceInfo);
+  const response2 = await instance.get('/api/users/info', {
+            headers: {
+              'X-Token': userInfo.value.token,
+            },
+          });
+    useSpaceInfo.value.useSpace = response2.data.data.cur_capacity;
+    useSpaceInfo.value.totalSpace = response2.data.data.max_capacity;
+    console.log(useSpaceInfo);
 }
 
 getUseSpace();
