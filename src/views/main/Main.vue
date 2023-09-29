@@ -119,7 +119,9 @@
             <span class="op">
               <template v-if="row.showOp && row.fileId && row.status == 2">
                 <template v-if="row.showOp && row.fileId">
-                <span class="iconfont icon-share1" @click="share(row)"
+                <span class="iconfont icon-share1" 
+                @click="share(row)"
+                v-if="row.folderType == 0"
                   >分享</span
                 >
                 <span
@@ -329,7 +331,7 @@ const loadDataList = async () => {
       })
       // tableData.value = response.data.data;
       tableData.value = p;
-      console.log(p);
+      // console.log(p);
       // console.log(tableData.value.data);
       editing.value = false;
     }
