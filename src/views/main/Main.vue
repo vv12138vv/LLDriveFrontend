@@ -89,10 +89,10 @@
             </template>
             <span class="file-name" v-if="!row.showEdit" :title="row.fileName">
               <span @click="preview(row)">{{ row.fileName }}</span>
-              <span v-if="row.status == 0" class="transfer-status">转码中</span>
+              <!-- <span v-if="row.status == 0" class="transfer-status">转码中</span>
               <span v-if="row.status == 1" class="transfer-status transfer-fail"
                 >转码失败</span
-              >
+              > -->
             </span>
             <div class="edit-panel" v-if="row.showEdit == true">
               <el-input
