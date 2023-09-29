@@ -157,8 +157,8 @@
 
     <div class="no-data" v-else>
       <div class="no-data-inner">
-        <Icon iconName="no_data" :width="120" fit="fill"></Icon>
-        <div class="tips">当前目录为空</div>
+        <!-- <Icon iconName="no_data" :width="120" fit="fill"></Icon> -->
+        <div class="tips">当前文件夹为空</div>
         <div class="op-list">
           <el-upload
             :show-file-list="false"
@@ -579,6 +579,7 @@ const folderSelectRef = ref();
 const currentMoveFile = ref({});
 
 const moveFolder = (data) => {
+
   currentMoveFile.value = data;
   folderSelectRef.value.showFolderDialog(data.fileId);
 };
@@ -595,6 +596,7 @@ const moveFolderBatch = () => {
     }
   });
   folderSelectRef.value.showFolderDialog(excludeFileIdList.join(","));
+
 };
 
 
@@ -610,24 +612,32 @@ const moveFolderDone = async (folderId) => {
     return;
   }
   let filedIdsArray = [];
-  if (currentMoveFile.value.fileId) {
-    filedIdsArray.push(currentMoveFile.value.fileId);
-  } else {
-    filedIdsArray = filedIdsArray.concat(selectFileIdList.value);
-  }
-  let result = await proxy.Request({
-    url: api.changeFileFolder,
-    params: {
-      fileIds: filedIdsArray.join(","),
-      filePid: folderId,
-    },
-  });
-  if (!result) {
-    return;
+  // if (currentMoveFile.value.fileId) {
+  //   filedIdsArray.push(currentMoveFile.value.fileId);
+  // } else {
+  //   filedIdsArray = filedIdsArray.concat(selectFileIdList.value);
+  // }
+  if (currentMoveFile.value.fileId){
+  let response = await instance.post("/api/files/move",{
+    username: userInfo.value.nickName,
+    user_file_id: currentMoveFile.value.fileId,
+    dir_id: folderId,
+  })
+  }else{
+    for(const user_file_id of selectFileIdList.value){
+      const response =await instance.post('/api/files/move',{
+        username: userInfo.value.nickName,
+        user_file_id: user_file_id,
+        dir_id: folderId,
+      })
+    }
   }
   folderSelectRef.value.close();
+  console.log(currentFolder.value.user_file_id);
   loadDataList();
 };
+
+
 
 const previewRef = ref();
 const navigationRef = ref();

@@ -125,9 +125,9 @@
 
         <!-- 登录 -->
         <el-form-item v-if="opType == 1">
-          <div class="rememberme-panel">
+          <!-- <div class="rememberme-panel">
             <el-checkbox v-model="formData.remenberMe">记住我</el-checkbox>
-          </div>
+          </div> -->
           <div class="no-account">
             <a href="javascript:void(0)" class="a-link" @click="showPanel(2)">
               忘记密码？</a>

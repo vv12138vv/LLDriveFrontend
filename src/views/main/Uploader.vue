@@ -173,11 +173,15 @@
     },
   };
   
+
+ let fid ="";
+
   const chunkSize = 1024*1024*5;
   const fileList = ref([]);
   const delList = ref([]);
   
   const addFile = async (file, filePid) => {
+    fid = filePid;
     const fileItem = {
       file: file,
       //文件UID
@@ -271,7 +275,9 @@
       formData.append('hash', currentFile.md5);
       formData.append('chunkNumber', i);
       formData.append('totalChunks', chunks);
-      formData.append('dir_id', "");
+      // formData.append('dir_id', "");
+      console.log("fid: "+fid);
+      formData.append('dirId', fid);
       //只上传文件，上传文件夹
       formData.append('dir', 0);
       formData.append('totalSize', fileSize);
