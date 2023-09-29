@@ -28,14 +28,7 @@
 
         <el-dropdown>
           <div class="user-info">
-            <!-- <div class="avatar">
-              <Avatar
-                :userId="userInfo.userId"
-                :avatar="userInfo.avatar"
-                :timestamp="timestamp"
-                :width="46"
-              ></Avatar>
-            </div> -->
+            
             <span class="nick-name">{{ userInfo.nickName }}</span>
           </div>
           <template #dropdown>
@@ -81,10 +74,10 @@
             :class="['menu-item-sub', currentPath == sub.path ? 'active' : '']"
             v-for="sub in currentMenu.children"
           >
-            <span
+            <!-- <span
               :class="['iconfont', 'icon-' + sub.icon]"
               v-if="sub.icon"
-            ></span>
+            ></span> -->
             <span class="text">{{ sub.name }}</span>
           </div>
           <div class="tips" v-if="currentMenu && currentMenu.tips">
@@ -226,9 +219,10 @@ const menus = [
       },
       {
         icon: "doc",
-        name: "文档",
-        category: "doc",
-        path: "/main/doc",
+        name: "目录",
+        // category: "doc",
+        category: "folder",
+        path: "/main/folder",
       }
     ],
   },
@@ -258,28 +252,28 @@ const menus = [
         path: "/recycle",
       },
     ],
-  },
-  {
-    path: "/settings/fileList",
-    icon: "settings",
-    name: "管理",
-    menuCode: "settings",
-    allShow: false,
-    children: [
-      {
-        name: "文件管理",
-        path: "/settings/fileList",
-      },
-      {
-        name: "用户管理",
-        path: "/settings/userList",
-      },
-      // {
-      //   path: "/settings/sysSetting",
-      //   name: "系统设置",
-      // },
-    ],
-  },
+  }
+  // {
+  //   path: "/settings/fileList",
+  //   icon: "settings",
+  //   name: "管理",
+  //   menuCode: "settings",
+  //   allShow: false,
+  //   children: [
+  //     {
+  //       name: "文件管理",
+  //       path: "/settings/fileList",
+  //     },
+  //     {
+  //       name: "用户管理",
+  //       path: "/settings/userList",
+  //     },
+  //     {
+  //       path: "/settings/sysSetting",
+  //       name: "系统设置",
+  //     },
+  //   ],
+  // },
 ];
 
 const currentMenu = ref({});
@@ -338,13 +332,13 @@ const logout = () => {
 const useSpaceInfo = ref({ useSpace: userInfo.value.cur_capacity, totalSpace: userInfo.value.max_capacity });
 const getUseSpace = async()=>{
   console.log("update user space");
-  const response2 = await instance.get('/api/users/info', {
-            headers: {
-              'X-Token': userInfo.value.token,
-            },
-          });
-    useSpaceInfo.value.useSpace = response2.data.data.cur_capacity;
-    useSpaceInfo.value.totalSpace = response2.data.data.max_capacity;
+  // const response2 = await instance.get('/api/users/info', {
+  //           headers: {
+  //             'X-Token': userInfo.value.token,
+  //           },
+  //         });
+  //   useSpaceInfo.value.useSpace = response2.data.data.cur_capacity;
+  //   useSpaceInfo.value.totalSpace = response2.data.data.max_capacity;
     // console.log(useSpaceInfo);
 }
 
