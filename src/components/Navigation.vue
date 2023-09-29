@@ -40,7 +40,7 @@ const { proxy } = getCurrentInstance();
 const router = useRouter();
 const route = useRoute();
 import axios from "axios";
-const isntance = axios.create({
+const instance = axios.create({
   baseURL: 'http://localhost:8848'
 })
 const props = defineProps({
@@ -91,7 +91,7 @@ const openFolder = (data) => {
   folderList.value.push(folder);
   currentFolder.value = folder;
   console.log(folderList.value);
-  console.log(folder);
+  console.log(currentFolder.value);
   setPath();
 };
 
@@ -107,6 +107,7 @@ const backParent = () => {
       break;
     }
   }
+  console.log("currentIndex： "+currentIndex);
   setCurrentFolder(currentIndex - 1);
 };
 
@@ -135,7 +136,7 @@ const setPath = () => {
     // pathArray.push(item.fileId);
     pathArray.push(item.user_file_id);
   });
-  console.log(pathArray);
+  console.log("pathArray:  "+pathArray);
   router.push({
     path: route.path,
     query:
@@ -151,52 +152,44 @@ const setPath = () => {
 const getNavigationFolder = async (path) => {
 
 
-// console.log(pathArray);
-  // let url = api.getFolderInfo;
-  // if (props.shareId) {
-  //   url = api.getFolderInfo4Share;
-  // }
-  // if (props.adminShow) {
-  //   url = api.getFolderInfo4Admin;
-  // }
-  // let result = await proxy.Request({
-  //   url: url,
-  //   showLoading: false,
-  //   params: {
-  //     path: path,
-  //     shareId: props.shareId,
-  //   },
-  // });
+  folderList.value = [];
+
+  let pathArray = path.split('/');
+  console.log(pathArray);
+const apiUrl = 'http://localhost:8848/api/files/dir';
+
+// 使用 Promise.all 来等待所有请求完成
+const requests = pathArray.map(userFileId => {
+  return axios.get(apiUrl, {
+    params: {
+      user_file_id: userFileId
+    }
+  });
+});
+
+Promise.all(requests)
+  .then(responses => {
+    // const folderList = [];
+    responses.forEach((response, index) => {
+      console.log(response);
+      const f = {
+        file_name: response.data.data.file_name,
+        user_file_id: pathArray[index], // 使用 pathArray 中的相应元素
+      };
+      folderList.value.push(f);
+    });
+
+    // 此时 folderList 的顺序应该与 pathArray 一致
+    // console.log(folderList);
+  })
+  .catch(error => {
+    console.error(error);
+  });
 
 
 
-  // let pathArray = path.split('/');
+  console.log(folderList.value);
   
-  // try{
-  //   let result = await isntance.get('/api/files/list',{
-  //     params: {
-  //       email: formData.value.email
-  //     }
-
-  //   })
-  // }
-  try{
-    let result = await isntance.get('/api/files/list',{
-      username: userInfo.value.nickName,
-      dir_id: currentFolder.value.user_file_id,
-      type: 0,
-      page_no: 1,
-      page_size: 15,
-      file_name: currentFolder.value.file_name
-    })
-      if (!result) {
-      return;
-    }
-    folderList.value = result.data.data.list;
-    console.log(folderList);
-    }catch(error){
-      console.log(error);
-    }
 };
 
 const emit = defineEmits(["navChange"]);

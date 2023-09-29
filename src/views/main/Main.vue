@@ -79,7 +79,7 @@
           <!-- <div class="file-item"> -->
           <div class="file-item" @mouseenter="showOp(row)" @mouseleave="cancelShowOp(row)">
             <template
-              v-if="(row.fileType == 3 || row.fileType == 1) && row.status == 2"
+              v-if="(row.fileType == 3 || row.fileType == 1) && row.status == -100"
             >
               <icon :cover="row.fileCover" :width="32"></icon>
             </template>
@@ -323,6 +323,7 @@ const loadDataList = async () => {
         element.status = 2;
         element.fileSize = element.size;
         element.fileId = element.user_file_id;
+        element.fileCover = element.file_name;
         // element.showOp = true;
         // element.fileCover = 
         
@@ -429,7 +430,10 @@ const saveNameEdit = async (index) => {
   tableData.value.list[index].showEdit = false;
   tableData.value.list[index].status = 2;
   tableData.value.list[index].folderType = 1;
-  // tableData.value.list[index].fileid = "";
+  tableData.value.list[index].fileId = response.data.data.user_file_id;
+  tableData.value.list[index].user_file_id = response.data.data.user_file_id;
+  console.log(tableData.value.list);
+  loadDataList();
   }else{
     let response = await instance.get('/api/files/rename',{
       params:{
@@ -443,7 +447,7 @@ const saveNameEdit = async (index) => {
     tableData.value.list[index].folderType = 0;
     // tableData.value.list[index].fileid = "";
   }
-    
+ 
   editing.value = false;
 };
 
@@ -571,6 +575,7 @@ const downloadFile = async () => {
 //移动目录
 const folderSelectRef = ref();
 const currentMoveFile = ref({});
+
 const moveFolder = (data) => {
   currentMoveFile.value = data;
   folderSelectRef.value.showFolderDialog(data.fileId);
@@ -589,6 +594,9 @@ const moveFolderBatch = () => {
   });
   folderSelectRef.value.showFolderDialog(excludeFileIdList.join(","));
 };
+
+
+
 
 const moveFolderDone = async (folderId) => {
   if (
