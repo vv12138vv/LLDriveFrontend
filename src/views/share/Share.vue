@@ -42,13 +42,28 @@
             >
               <span>{{ row.fileName }}</span>
             </span>
-            <span class="op">
+            <!-- <span class="op">
               <template v-if="row.showOp && row.fileId">
-                <span class="iconfont icon-link" @click="copy(row)"
-                  >复制链接</span
+                <span class="iconfont icon-share" @click="sava(row)"
+                  >转存</span
                 >
               </template>
-            </span>
+            </span> -->
+            <div>
+              <span class="op">
+                <template v-if="row.showOp && row.fileId">
+                  <span class="iconfont icon-share" @click="openDialog(row)">转存</span>
+                </template>
+              </span>
+
+              <el-dialog v-model="dialogVisible" title="填写提取码" @close="dialogVisible = false">
+                <el-input v-model="extractCode" placeholder="请输入提取码"></el-input>
+                <span slot="footer" class="dialog-footer">
+                  <el-button @click="dialogVisible = false">取消</el-button>
+                  <el-button type="primary" @click="save">保存</el-button>
+                </span>
+              </el-dialog>
+            </div>
           </div>
         </template>
         <template #expire_time="{ index, row }">
@@ -138,6 +153,7 @@ const loadDataList = async () => {
         element.status = 0;
         element.fileSize = element.size;
         element.expireTime=element.expire_time;
+        element.fileId = element.shared_id;
       })
       // tableData.value = response.data.data;
       tableData.value = p;
@@ -215,26 +231,72 @@ const saveBatch = async () => {
   }
 };
 
+// const save = async () => {
+//   try {
+//     const confirmed = window.confirm("你确定要转存该文件吗？");
+//     if (!confirmed) {
+//       return;
+//     }
+//     const result = await instance.post('/api/share/save',{
+//       shared_id: shared_id,
+//       username: userInfo.value.nickName,
+//       dir_id: ""
+//     })
+//     if (!result) {
+//       return;
+//     }
+//     loadDataList();
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+const dialogVisible = ref(false); // 控制对话框的显示状态
+const extractCode = ref(''); // 用于存储提取码的变量
+const shared_file_id=ref();
+const openDialog = (row) => {
+  dialogVisible.value = true; // 显示对话框
+  // console.log(row.shared_id);
+  shared_file_id.value=row.shared_id;
+  // console.log(shared_file_id.value);
+};
+
+const save = async () => {
+  console.log(shared_file_id.value);
+  console.log(extractCode.value);
+  let response =await instance.post('/api/share/save',{
+    shared_id: shared_file_id.value,
+    username: userInfo.value.nickName,
+    dir_id: "",
+    code: extractCode.value
+  })
+  if(!response.data.status_code==proxy.Status.success){
+  }
+  dialogVisible.value = false;
+};
+
+
+
 // const cancelShare = (row) => {
 //   cancelShareIdList.value = [row.shareId];
 //   cancelShareDone();
 // };
 
-const cancelShareDone = async () => {
-  proxy.Confirm(`你确定要取消分享吗？`, async () => {
-    let result = await proxy.Request({
-      url: api.cancelShare,
-      params: {
-        shareIds: cancelShareIdList.value.join(","),
-      },
-    });
-    if (!result) {
-      return;
-    }
-    proxy.Message.success("取消分享成功");
-    loadDataList();
-  });
-};
+// const cancelShareDone = async () => {
+//   proxy.Confirm(`你确定要取消分享吗？`, async () => {
+//     let result = await proxy.Request({
+//       url: api.cancelShare,
+//       params: {
+//         shareIds: cancelShareIdList.value.join(","),
+//       },
+//     });
+//     if (!result) {
+//       return;
+//     }
+//     proxy.Message.success("取消分享成功");
+//     loadDataList();
+//   });
+// };
 </script>
 
 <style lang="scss" scoped>
