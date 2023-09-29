@@ -16,11 +16,11 @@
             </el-button>
           </el-upload>
         </div>
-        <el-button type="danger" @click="downloadFile" :disabled="selectFileIdList.length == 0">
+        <el-button color="#626aef" type="danger" @click="downloadFile" :disabled="selectFileIdList.length == 0">
           <!-- <span class="iconfont icon-folder-add"></span> -->
           下载
         </el-button>
-        <el-button type="success" @click="newFolder" v-if="category == 'all'">
+        <el-button color="#adff41" type="success" @click="newFolder" v-if="category == 'all'">
           <!-- <span class="iconfont icon-folder-add"></span> -->
           新建文件夹
         </el-button>
@@ -293,17 +293,19 @@ const category = ref();
 //   editing.value = false;
 // };
 const loadDataList = async () => {
-  console.log("main.vue: call loadDataList");
+  console.log(category.value);
+  console.log(typeof(category.value));
   try{
     let response = await instance.post('/api/files/list',{
       username: userInfo.value.nickName,
       // dir_id: "",
       dir_id:currentFolder.value.user_file_id,
-      type: "",
+      // type: "",
+      type: category.value,
       file_name: fileNameFuzzy.value,
       page_no: tableData.value.page_no,
       page_size: tableData.value.page_size
-    })
+    })  
     if(response.data.status_code==proxy.Status.success){
       const p = response.data.data;
       p.list.forEach((element)=>{
@@ -625,7 +627,12 @@ const moveFolderDone = async (folderId) => {
   console.log(currentFolder.value.user_file_id);
   loadDataList();
 };
-
+const pathTypeMap = new Map([
+  ['folder',0],
+  ['video',1],
+  ['music',2],
+  ['image',3],
+])
 
 
 const previewRef = ref();
@@ -651,7 +658,7 @@ const navChange = (data) => {
   const { curFolder, categoryId } = data;
   currentFolder.value = curFolder;
   showLoading.value = true;
-  category.value = categoryId;
+  category.value=pathTypeMap.get(categoryId);
   loadDataList();
 };
 
@@ -689,8 +696,14 @@ const shareRef = ref();
 const share = (row) => {
   shareRef.value.show(row);
 };
+
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/file.list.scss";
+
+
+.o{
+  color: #adff41;
+}
 </style>

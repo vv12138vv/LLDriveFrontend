@@ -28,14 +28,7 @@
 
         <el-dropdown>
           <div class="user-info">
-            <!-- <div class="avatar">
-              <Avatar
-                :userId="userInfo.userId"
-                :avatar="userInfo.avatar"
-                :timestamp="timestamp"
-                :width="46"
-              ></Avatar>
-            </div> -->
+            
             <span class="nick-name">{{ userInfo.nickName }}</span>
           </div>
           <template #dropdown>
@@ -203,8 +196,14 @@ const menus = [
       {
         icon: "all",
         name: "全部",
-        category: "all",
+        category: "",
         path: "/main/all",
+      },
+      {
+        icon: "doc",
+        name: "目录",
+        category: "folder",
+        path: "/main/folder",
       },
       {
         icon: "video",
@@ -224,12 +223,6 @@ const menus = [
         category: "image",
         path: "/main/image",
       },
-      {
-        icon: "doc",
-        name: "文档",
-        category: "doc",
-        path: "/main/doc",
-      }
     ],
   },
   {
@@ -258,28 +251,28 @@ const menus = [
         path: "/recycle",
       },
     ],
-  },
-  {
-    path: "/settings/fileList",
-    icon: "settings",
-    name: "管理",
-    menuCode: "settings",
-    allShow: false,
-    children: [
-      {
-        name: "文件管理",
-        path: "/settings/fileList",
-      },
-      {
-        name: "用户管理",
-        path: "/settings/userList",
-      },
-      // {
-      //   path: "/settings/sysSetting",
-      //   name: "系统设置",
-      // },
-    ],
-  },
+  }
+  // {
+  //   path: "/settings/fileList",
+  //   icon: "settings",
+  //   name: "管理",
+  //   menuCode: "settings",
+  //   allShow: false,
+  //   children: [
+  //     {
+  //       name: "文件管理",
+  //       path: "/settings/fileList",
+  //     },
+  //     {
+  //       name: "用户管理",
+  //       path: "/settings/userList",
+  //     },
+  //     {
+  //       path: "/settings/sysSetting",
+  //       name: "系统设置",
+  //     },
+  //   ],
+  // },
 ];
 
 const currentMenu = ref({});
@@ -345,7 +338,7 @@ const getUseSpace = async()=>{
           });
     useSpaceInfo.value.useSpace = response2.data.data.cur_capacity;
     useSpaceInfo.value.totalSpace = response2.data.data.max_capacity;
-    // console.log(useSpaceInfo);
+    console.log(useSpaceInfo);
 }
 
 getUseSpace();

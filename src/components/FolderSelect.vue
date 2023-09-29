@@ -101,7 +101,7 @@ console.log("filename:  "+filename);
   let response2 = await instance.post('/api/files/list',{
       username: userInfo.value.nickName,
       dir_id: filePid.value,
-      type: 0,
+      // type: 0,
       // file_name: filename,
       page_no: 1,
       page_size: 15
