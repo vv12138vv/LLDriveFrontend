@@ -89,23 +89,6 @@ const tableOptions = {
   extHeight: 20,
   selectType: "checkbox",
 };
-// const loadDataList = async () => {
-//   let params = {
-//     pageNo: tableData.value.pageNo,
-//     pageSize: tableData.value.pageSize,
-//   };
-//   if (params.category !== "all") {
-//     delete params.filePid;
-//   }
-//   let result = await proxy.Request({
-//     url: api.loadDataList,
-//     params,
-//   });
-//   if (!result) {
-//     return;
-//   }
-//   tableData.value = result.data;
-// };
 
 const loadDataList = async () => {
   console.log("recycle.vue: call loadDataList");

@@ -251,28 +251,28 @@ const menus = [
         path: "/recycle",
       },
     ],
-  }
-  // {
-  //   path: "/settings/fileList",
-  //   icon: "settings",
-  //   name: "管理",
-  //   menuCode: "settings",
-  //   allShow: false,
-  //   children: [
-  //     {
-  //       name: "文件管理",
-  //       path: "/settings/fileList",
-  //     },
-  //     {
-  //       name: "用户管理",
-  //       path: "/settings/userList",
-  //     },
-  //     {
-  //       path: "/settings/sysSetting",
-  //       name: "系统设置",
-  //     },
-  //   ],
-  // },
+  },
+  {
+    path: "/settings/fileList",
+    icon: "settings",
+    name: "管理",
+    menuCode: "settings",
+    allShow: false,
+    children: [
+      {
+        name: "文件管理",
+        path: "/settings/fileList",
+      },
+      {
+        name: "用户管理",
+        path: "/settings/userList",
+      },
+      {
+        path: "/settings/sysSetting",
+        name: "系统设置",
+      },
+    ],
+  },
 ];
 
 const currentMenu = ref({});

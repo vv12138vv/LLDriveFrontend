@@ -41,14 +41,6 @@
         :fetch="loadDataList"
         :options="tableOptions"
       >
-        <!-- <template #avatar="{ index, row }">
-          <div class="avatar">
-            <Avatar :userId="row.userId" :avatar="row.qqAvatar"></Avatar>
-          </div>
-        </template> -->
-
-        
-
         <template #space="{ index, row }">
           {{ proxy.Utils.size2Str(row.useSpace) }}/{{
             proxy.Utils.size2Str(row.totalSpace)
@@ -113,11 +105,11 @@ const instance = axios.create({
 })
 
 
-const api = {
-  loadDataList: "/admin/loadUserList",
-  updateUserStatus: "/admin/updateUserStatus",
-  updateUserSpace: "/admin/updateUserSpace",
-};
+// const api = {
+//   loadDataList: "/admin/loadUserList",
+//   updateUserStatus: "/admin/updateUserStatus",
+//   updateUserSpace: "/admin/updateUserSpace",
+// };
 
 //列表
 const columns = [
@@ -145,10 +137,6 @@ const columns = [
     prop: "joinTime",
   },
   {
-    label: "最后登录时间",
-    prop: "lastLoginTime",
-  },
-  {
     label: "状态",
     prop: "status",
     scopedSlots: "status",
@@ -164,60 +152,81 @@ const columns = [
 const searchFormData = ref({});
 
 //列表
-const tableData = ref({});
+const tableData = ref({page_no: 1, page_size: 15});
 const tableOptions = {
   extHeight: 20,
 };
 const loadDataList = async () => {
   try{
-    const response = await instance.get('/api/users/list');
+    const response = await instance.get('/api/users/list',{
+      params:{
+        page_no: tableData.value.page_no,
+        page_size: tableData.value.page_size
+      }
+    });
    const p = response.data.data;
-   p.user.forEach((element)=>{
+   p.list.forEach((element)=>{
      element.useSpace = element.cur_capacity;
      element.totalSpace = element.max_capacity;
-     element.status = element.is_banned;
-     
+     element.status = !element.is_banned;
+     element.nickName=element.username;
+     element.joinTime=element.create_time;
    })
-   console.log(p.user);
    tableData.value = p;
   } catch (error) {
         console.log(error);
       }
   
-  // let params = {
-  //   pageNo: tableData.value.pageNo,
-  //   pageSize: tableData.value.pageSize,
-  // };
-  // Object.assign(params, searchFormData.value);
-  // let result = await proxy.Request({
-  //   url: api.loadDataList,
-  //   params,
-  // });
-  // if (!result) {
-  //   return;
-  // }
-  // tableData.value = result.data;
 };
 
 //修改状态
-const updateUserStatus = (row) => {
-  proxy.Confirm(
-    `你确定要【${row.status == 0 ? "启动" : "禁用"}】吗？`,
-    async () => {
-      let result = await proxy.Request({
-        url: api.updateUserStatus,
-        params: {
-          userId: row.userId,
-          status: row.status == 0 ? 1 : 0,
-        },
-      });
-      if (!result) {
+// const updateUserStatus = async (row) => {
+//   proxy.Confirm(
+//     `你确定要【${row.status == 0 ? "启动" : "禁用"}】吗？`,
+//     async () => {
+//       let result = await proxy.Request({
+//         url: api.updateUserStatus,
+//         params: {
+//           userId: row.userId,
+//           status: row.status == 0 ? 1 : 0,
+//         },
+//       });
+//       if (!result) {
+//         return;
+//       }
+//       loadDataList();
+//     }
+//   );
+// };
+const updateUserStatus = async (row) => {
+  const user_id=row.user_id;
+  try {
+    if(row.status==1){
+      const confirmed = window.confirm("你确定要禁用该用户吗？");
+      if (!confirmed) {
         return;
       }
-      loadDataList();
+    }else{
+      const confirmed = window.confirm("你确定要启用该用户吗？");
+      if (!confirmed) {
+        return;
+      }
     }
-  );
+    const result = await instance.get('/api/users/change-status', {
+      params: {
+        user_id: user_id,
+        is_banned: row.status==1?"1":"0",
+      }
+    })
+    if (!result) {
+      return;
+    }
+    loadDataList();
+  } catch (error) {
+    console.log(error);
+  }
 };
+
 
 //分配空间大小
 const dialogConfig = ref({
