@@ -14,8 +14,7 @@
               ></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="4">
-            <!-- 下拉框 -->
+          <!-- <el-col :span="4">
             <el-form-item label="状态">
               <el-select
                 clearable
@@ -26,7 +25,7 @@
                 <el-option :value="0" label="禁用"></el-option>
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :span="4" :style="{ 'padding-left': '10px' }">
             <el-button type="primary" @click="loadDataList"> 查询 </el-button>
           </el-col>
@@ -149,7 +148,7 @@ const columns = [
     scopedSlots: "op",
   },
 ];
-const searchFormData = ref({});
+const searchFormData = ref({nickNameFuzzy:""});
 
 //列表
 const tableData = ref({page_no: 1, page_size: 15});
@@ -161,7 +160,8 @@ const loadDataList = async () => {
     const response = await instance.get('/api/users/list',{
       params:{
         page_no: tableData.value.page_no,
-        page_size: tableData.value.page_size
+        page_size: tableData.value.page_size,
+        username: searchFormData.value.nickNameFuzzy
       }
     });
    const p = response.data.data;
