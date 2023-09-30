@@ -49,7 +49,7 @@
             @mouseleave="cancelShowOp(row)"
           >
             <template
-              v-if="(row.fileType == 3 || row.fileType == 1) && row.status == 2"
+              v-if="(row.fileType == 3 || row.fileType == 1) && row.status == 3"
             >
               <icon :cover="row.fileCover" :width="32"></icon>
             </template>
@@ -114,6 +114,11 @@
 <script setup>
 import { ref, reactive, getCurrentInstance, nextTick, computed } from "vue";
 const { proxy } = getCurrentInstance();
+import axios from 'axios';
+
+const instance = axios.create({
+  baseURL: 'http://localhost:8848'
+});
 
 const api = {
   loadDataList: "/admin/loadFileList",
@@ -152,7 +157,7 @@ const search = () => {
   loadDataList();
 };
 //列表
-const tableData = ref({});
+const tableData = ref({page_no: 1,page_size: 15});
 const tableOptions = {
   extHeight: 50,
   selectType: "checkbox",
@@ -163,7 +168,7 @@ const selectFileIdList = ref([]);
 const rowSelected = (rows) => {
   selectFileIdList.value = [];
   rows.forEach((item) => {
-    selectFileIdList.value.push(item.userId + "_" + item.fileId);
+    selectFileIdList.value.push(item.user_file_id);
   });
   console.log(selectFileIdList);
 };
@@ -171,22 +176,40 @@ const rowSelected = (rows) => {
 const fileNameFuzzy = ref();
 const showLoading = ref(true);
 
+
 const loadDataList = async () => {
-  let params = {
-    pageNo: tableData.value.pageNo,
-    pageSize: tableData.value.pageSize,
-    fileNameFuzzy: fileNameFuzzy.value,
-    filePid: currentFolder.value.fileId,
-  };
-  let result = await proxy.Request({
-    url: api.loadDataList,
-    showLoading: showLoading,
-    params,
-  });
-  if (!result) {
-    return;
+  try{
+    let response = await instance.post('/api/files/admin-list',{
+      file_name: fileNameFuzzy.value,
+      page_no: tableData.value.page_no,
+      page_size: tableData.value.page_size
+    })  
+    if(response.data.status_code==proxy.Status.success){
+      const p = response.data.data;
+      p.list.forEach((element)=>{
+        element.fileName = element.file_name;
+        element.folderType = element.is_dir == true ? 1:0;
+        element.fileType = element.type;
+        //下面解注释使文件预览,该页面中status为2时为预览
+        element.status = 2;
+        element.fileSize = element.size;
+        element.fileId = element.user_file_id;
+        element.fileCover = element.file_name;
+        element.lastUpdateTime=element.update_time;
+        // element.showOp = true;
+        // element.fileCover = 
+        
+      })
+      // tableData.value = response.data.data;
+      tableData.value = p;
+      // console.log(p);
+      // console.log(tableData.value.data);
+      editing.value = false;
+    }
+  }catch(error){
+    console.log(error);
   }
-  tableData.value = result.data;
+
 };
 
 //展示操作按钮
@@ -225,55 +248,80 @@ const navChange = (data) => {
 };
 
 //删除文件
-const delFile = (row) => {
-  proxy.Confirm(
-    `你确定要删除【${row.fileName}】吗？删除的文件可在10天内通过回收站还原`,
-    async () => {
-      let result = await proxy.Request({
-        url: api.delFile,
-        params: {
-          fileIdAndUserIds: row.userId + "_" + row.fileId,
-        },
-      });
-      if (!result) {
-        return;
-      }
-      loadDataList();
+const delFile = async (row) => {
+  const user_file_id=row.user_file_id;
+  try {
+    const confirmed = window.confirm("你确定要删除该文件吗?");
+    if (!confirmed) {
+      return;
     }
-  );
+    const result = await instance.get('/api/files/admin-delete',{
+      params: {
+        user_file_id: user_file_id,
+      }
+    })
+    if (!result) {
+      return;
+    }
+    loadDataList();
+  } catch (error) {
+    console.log(error);
+  }
 };
 //批量删除
-const delFileBatch = () => {
-  if (selectFileIdList.value.length == 0) {
+const delFileBatch = async () => {
+  if (selectFileIdList.value.length === 0) {
     return;
   }
-  proxy.Confirm(
-    `你确定要删除这些文件吗？删除的文件可在10天内通过回收站还原`,
-    async () => {
-      let result = await proxy.Request({
-        url: api.delFile,
+  try {
+    const confirmed = window.confirm("你确定要删除这些文件吗?");
+    if (!confirmed) {
+      return;
+    }
+    for(const user_file_id of selectFileIdList.value){
+      const result = await instance.get('/api/files/admin-delete',{
         params: {
-          fileIdAndUserIds: selectFileIdList.value.join(","),
-        },
-      });
+          user_file_id: user_file_id,
+        }
+      })
       if (!result) {
         return;
       }
-      loadDataList();
     }
-  );
+    loadDataList();
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 //下载文件
 const download = async (row) => {
-  let result = await proxy.Request({
-    url: api.createDownloadUrl + "/" + row.userId + "/" + row.fileId,
-  });
-  if (!result) {
-    return;
-  }
-  window.location.href = api.download + "/" + result.data;
+  const user_file_id=row.user_file_id;
+  try {
+      console.log(user_file_id);
+      const response = await instance.get('/api/transfers/download', {
+        params: {
+          user_file_id: user_file_id,
+        },
+        responseType: 'blob',
+      });
+      console.log(response);
+      const downloadLink = document.createElement('a');
+      const dispositionHeader = response.headers['content-disposition'];
+      // const fileName = dispositionHeader
+      //   ? dispositionHeader.split('filename=')[1].replace(/"/g, '')
+      //   : 'file';
+      const fileName = dispositionHeader
+    ? decodeURIComponent(dispositionHeader.split('filename=')[1].replace(/"/g, ''))
+    : 'file';
+      downloadLink.href = window.URL.createObjectURL(response.data);
+      downloadLink.download = fileName;
+      downloadLink.click();
+    } catch (error) {
+      console.log(error);
+    }
 };
+
 </script>
 
 <style lang="scss" scoped>

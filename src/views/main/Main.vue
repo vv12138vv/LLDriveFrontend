@@ -196,11 +196,11 @@ import CategoryInfo from "@/js/CategoryInfo.js";
 import FileShare from "./ShareFile.vue";
 import { ref, reactive, getCurrentInstance, nextTick, computed,toRef } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import axios from 'axios';
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const route = useRoute();
 const emit = defineEmits(["addFile"]);
+import axios from 'axios';
 
 const instance = axios.create({
   baseURL: 'http://localhost:8848'
