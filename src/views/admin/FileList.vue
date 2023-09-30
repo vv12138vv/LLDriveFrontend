@@ -196,6 +196,7 @@ const loadDataList = async () => {
         element.fileId = element.user_file_id;
         element.fileCover = element.file_name;
         element.lastUpdateTime=element.update_time;
+        element.nickName=element.username;
         // element.showOp = true;
         // element.fileCover = 
         
