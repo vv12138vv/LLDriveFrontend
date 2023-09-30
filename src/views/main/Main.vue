@@ -301,7 +301,7 @@ const loadDataList = async () => {
       // dir_id: "",
       dir_id:currentFolder.value.user_file_id,
       // type: "",
-      type: category.value,
+      type: pathTypeMap.get(category.value),
       file_name: fileNameFuzzy.value,
       page_no: tableData.value.page_no,
       page_size: tableData.value.page_size
@@ -658,7 +658,7 @@ const navChange = (data) => {
   const { curFolder, categoryId } = data;
   currentFolder.value = curFolder;
   showLoading.value = true;
-  category.value=pathTypeMap.get(categoryId);
+  category.value=categoryId;
   loadDataList();
 };
 

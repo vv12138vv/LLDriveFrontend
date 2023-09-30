@@ -98,6 +98,11 @@ const instance = axios.create({
 //列表
 const columns = [
   {
+    label: "分享ID",
+    prop: "shared_id",
+    width: 300,
+  },
+  {
     label: "文件名",
     prop: "file_name",
     scopedSlots: "file_name",

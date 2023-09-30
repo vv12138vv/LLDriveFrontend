@@ -267,10 +267,10 @@ const menus = [
         name: "用户管理",
         path: "/settings/userList",
       },
-      {
-        path: "/settings/sysSetting",
-        name: "系统设置",
-      },
+      // {
+      //   path: "/settings/sysSetting",
+      //   name: "系统设置",
+      // },
     ],
   },
 ];

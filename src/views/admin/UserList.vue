@@ -179,25 +179,6 @@ const loadDataList = async () => {
   
 };
 
-//修改状态
-// const updateUserStatus = async (row) => {
-//   proxy.Confirm(
-//     `你确定要【${row.status == 0 ? "启动" : "禁用"}】吗？`,
-//     async () => {
-//       let result = await proxy.Request({
-//         url: api.updateUserStatus,
-//         params: {
-//           userId: row.userId,
-//           status: row.status == 0 ? 1 : 0,
-//         },
-//       });
-//       if (!result) {
-//         return;
-//       }
-//       loadDataList();
-//     }
-//   );
-// };
 const updateUserStatus = async (row) => {
   const user_id=row.user_id;
   try {
@@ -283,8 +264,6 @@ const submitForm = () => {
     if (!valid) {
       return;
     }
-    // Object.assign(params, formData.value);
-    // console.log(formData.value);
     let result = await instance.get('/api/users/change-capacity',{
       params:{
         user_id: formData.value.user_id,
