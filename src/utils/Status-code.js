@@ -16,6 +16,7 @@ const Status = {
     file_not_delete: 4013,
     hash_error: 4014,
     share_not_exist:4015,
+    capacity_error:4017,
     success: 5000,
 }
 

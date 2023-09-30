@@ -221,6 +221,7 @@ const updateUserStatus = async (row) => {
     if (!result) {
       return;
     }
+    proxy.Message.success("操作成功");
     loadDataList();
   } catch (error) {
     console.log(error);
@@ -257,25 +258,53 @@ const updateSpace = (data) => {
   });
 };
 
+// const submitForm = () => {
+//   formDataRef.value.validate(async (valid) => {
+//     if (!valid) {
+//       return;
+//     }
+//     let params = {};
+//     Object.assign(params, formData.value);
+//     let result = await proxy.Request({
+//       url: api.updateUserSpace,
+//       params: params,
+//     });
+//     if (!result) {
+//       return;
+//     }
+//     dialogConfig.value.show = false;
+//     proxy.Message.success("操作成功");
+//     loadDataList();
+//   });
+// };
+
 const submitForm = () => {
   formDataRef.value.validate(async (valid) => {
     if (!valid) {
       return;
     }
-    let params = {};
-    Object.assign(params, formData.value);
-    let result = await proxy.Request({
-      url: api.updateUserSpace,
-      params: params,
+    // Object.assign(params, formData.value);
+    // console.log(formData.value);
+    let result = await instance.get('/api/users/change-capacity',{
+      params:{
+        user_id: formData.value.user_id,
+        new_capacity: formData.value.changeSpace
+      }
     });
-    if (!result) {
-      return;
+    if (result.data.status_code==proxy.Status.success) {
+      dialogConfig.value.show = false;
+      proxy.Message.success("操作成功");
+    }else{
+      if(result.data.status_code==proxy.Status.capacity_error){
+        dialogConfig.value.show = false;
+        proxy.Message.error("操作失败，新容量必须大于当前容量");
+      }
     }
-    dialogConfig.value.show = false;
-    proxy.Message.success("操作成功");
     loadDataList();
   });
 };
+
+
 </script>
 <style lang="scss" scoped>
 .top-panel {
