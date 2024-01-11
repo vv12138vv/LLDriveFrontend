@@ -4,12 +4,14 @@
         <span>上传任务</span>
         <span class="tips">（仅展示本次上传任务）</span>
       </div>
+      <!-- 文件列表 -->
       <div class="file-list">
         <div v-for="(item, index) in fileList" class="file-item">
           <div class="upload-panel">
             <div class="file-name">
               {{ item.fileName }}
             </div>
+            <!-- 进度条 -->
             <div class="progress">
               <!--上传-->
               <el-progress
@@ -26,16 +28,17 @@
               <span
                 :class="['iconfont', 'icon-' + STATUS[item.status].icon]"
                 :style="{ color: STATUS[item.status].color }"
-              ></span>
+              >
+            </span>
               <!--状态描述-->
               <span
                 class="status"
                 :style="{ color: STATUS[item.status].color }"
-                >{{
-                  item.status == "fail" ? item.errorMsg : STATUS[item.status].desc
-                }}</span
               >
+                {{ item.status == "fail" ? item.errorMsg : STATUS[item.status].desc }}
+              </span>
               <!--上传中-->
+              <!-- 上传百分比 -->
               <span
                 class="upload-info"
                 v-if="item.status == STATUS.uploading.value"
@@ -220,7 +223,9 @@
     if (md5FileUid == null) {
       return;
     }
-    uploadFile(md5FileUid);
+    console.log(md5FileUid);
+    // uploadFile(md5FileUid);
+    upload(md5FileUid);
   };
   defineExpose({ addFile });
   
@@ -244,39 +249,134 @@
   const emit = defineEmits(["uploadCallback"]);
 
 
-  const uploadFile = async (uid, chunkIndex) => {
-    chunkIndex = chunkIndex ? chunkIndex : 0;
-    //分片上传
-    let currentFile = getFileByUid(uid);
-    const file = currentFile.file;
-    const fileSize = currentFile.totalSize;
-    // const chunks = Math.ceil(fileSize / chunkSize);
-    const chunks = 1;
-    for (let i = chunkIndex; i < chunks; i++) {
-      let delIndex = delList.value.indexOf(uid);
-      if (delIndex != -1) {
-        delList.value.splice(delIndex, 1);
-        // console.log(delList.value);
+  // const uploadFile = async (uid, chunkIndex) => {
+  //   chunkIndex = chunkIndex ? chunkIndex : 0;
+  //   //分片上传
+  //   let currentFile = getFileByUid(uid);
+  //   const file = currentFile.file;
+  //   const fileSize = currentFile.totalSize;
+  //   // const chunks = Math.ceil(fileSize / chunkSize);
+  //   const chunks = 1;
+  //   for (let i = chunkIndex; i < chunks; i++) {
+  //     let delIndex = delList.value.indexOf(uid);
+  //     if (delIndex != -1) {
+  //       delList.value.splice(delIndex, 1);
+  //       // console.log(delList.value);
+  //       break;
+  //     }
+  //     currentFile = getFileByUid(uid);
+  //     if (currentFile.pause) {
+  //       break;
+  //     }
+  //     let start = i * chunkSize;
+  //     let end = start + chunkSize >= fileSize ? fileSize : start + chunkSize;
+  //     let chunkFile = file.slice(start, end);
+
+  //     let formData = new FormData();
+  //     // formData.append('chunkFlag', 1);
+  //     formData.append('chunkFlag', 0);
+  //     formData.append('file', chunkFile);
+  //     formData.append('fileName', file.name);
+  //     formData.append('hash', currentFile.md5);
+  //     formData.append('chunkNumber', i);
+  //     formData.append('totalChunks', chunks);
+  //     // formData.append('dir_id', "");
+  //     console.log("fid: "+fid);
+  //     formData.append('dirId', fid);
+  //     //只上传文件，上传文件夹
+  //     formData.append('dir', 0);
+  //     formData.append('totalSize', fileSize);
+  //     formData.append('username', userInfo.value.nickName);
+
+  //     const uploadResult = await instance.post('/api/transfers/upload', formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data', // 设置请求头为 FormData 类型
+  //       },
+  //       onUploadProgress: (progressEvent) => {
+  //         let loaded = progressEvent.loaded;
+  //         if (loaded > fileSize) {
+  //           loaded = fileSize;
+  //         }
+  //         currentFile.uploadSize = i * chunkSize + loaded;
+  //         currentFile.uploadProgress = Math.floor(
+  //           (currentFile.uploadSize / fileSize) * 100
+  //         );
+  //       },
+  //     });
+
+  //     // let uploadResult = await proxy.Request({//调用api接口处
+  //     //   url: api.upload,
+  //     //   showLoading: false,
+  //     //   dataType: "file",
+  //     //   params: {
+  //     //     file: chunkFile,
+  //     //     fileName: file.name,
+  //     //     fileMd5: currentFile.md5,
+  //     //     chunkIndex: i,
+  //     //     chunks: chunks,
+  //     //     fileId: currentFile.fileId,
+  //     //     filePid: currentFile.filePid,
+  //     //   },
+  //     //   showError: false,
+  //     //   errorCallback: (errorMsg) => {
+  //     //     currentFile.status = STATUS.fail.value;
+  //     //     currentFile.errorMsg = errorMsg;
+  //     //   },
+  //     //   uploadProgressCallback: (event) => {
+  //     //     let loaded = event.loaded;
+  //     //     if (loaded > fileSize) {
+  //     //       loaded = fileSize;
+  //     //     }
+  //     //     currentFile.uploadSize = i * chunkSize + loaded;
+  //     //     currentFile.uploadProgress = Math.floor(
+  //     //       (currentFile.uploadSize / fileSize) * 100
+  //     //     );
+  //     //   },
+  //     // });
+  //     if (uploadResult == null) {
+  //       break;
+  //     }
+  //     // currentFile.fileId = uploadResult.data.fileId;
+
+  //     currentFile.status = STATUS[uploadResult.data.data.status].value;
+  //     currentFile.chunkIndex = i;
+  //     if (
+  //       uploadResult.data.status == STATUS.upload_seconds.value ||
+  //       uploadResult.data.status == STATUS.upload_finish.value
+  //     ) {
+  //       currentFile.uploadProgress = 100;
+  //       emit("uploadCallback");
+  //       break;
+  //     }
+  //   }
+  // };
+
+  const upload=async(uid,chunkIndex)=>{
+    chunkIndex=chunkIndex?chunkIndex:0;
+    let currentFile=getFileByUid(uid);
+    const file=currentFile.file;
+    const fileSize=currentFile.totalSize;
+    const chunks=Math.ceil(fileSize/chunkSize);
+    for(let i=chunkIndex;i<chunks;i++){
+      let delIndex=delList.value.indexOf(uid);
+      if(delIndex!=-1){
+        delList.value.slice(delIndex,1);
         break;
       }
-      currentFile = getFileByUid(uid);
-      if (currentFile.pause) {
+      currentFile=getFileByUid(uid);
+      if(currentFile.pause){
         break;
       }
-      let start = i * chunkSize;
-      let end = start + chunkSize >= fileSize ? fileSize : start + chunkSize;
-      let chunkFile = file.slice(start, end);
+      let start=i*chunkSize;
+      let end=start+chunkSize>=fileSize?fileSize:start+chunkSize;
+      let chunkFile=file.slice(start,end);
 
       let formData = new FormData();
-      // formData.append('chunkFlag', 1);
-      formData.append('chunkFlag', 0);
       formData.append('file', chunkFile);
       formData.append('fileName', file.name);
       formData.append('hash', currentFile.md5);
       formData.append('chunkNumber', i);
       formData.append('totalChunks', chunks);
-      // formData.append('dir_id', "");
-      console.log("fid: "+fid);
       formData.append('dirId', fid);
       //只上传文件，上传文件夹
       formData.append('dir', 0);
@@ -298,53 +398,20 @@
           );
         },
       });
-
-      // let uploadResult = await proxy.Request({//调用api接口处
-      //   url: api.upload,
-      //   showLoading: false,
-      //   dataType: "file",
-      //   params: {
-      //     file: chunkFile,
-      //     fileName: file.name,
-      //     fileMd5: currentFile.md5,
-      //     chunkIndex: i,
-      //     chunks: chunks,
-      //     fileId: currentFile.fileId,
-      //     filePid: currentFile.filePid,
-      //   },
-      //   showError: false,
-      //   errorCallback: (errorMsg) => {
-      //     currentFile.status = STATUS.fail.value;
-      //     currentFile.errorMsg = errorMsg;
-      //   },
-      //   uploadProgressCallback: (event) => {
-      //     let loaded = event.loaded;
-      //     if (loaded > fileSize) {
-      //       loaded = fileSize;
-      //     }
-      //     currentFile.uploadSize = i * chunkSize + loaded;
-      //     currentFile.uploadProgress = Math.floor(
-      //       (currentFile.uploadSize / fileSize) * 100
-      //     );
-      //   },
-      // });
-      if (uploadResult == null) {
+      if(uploadResult==null){
         break;
       }
-      // currentFile.fileId = uploadResult.data.fileId;
-      
-      currentFile.status = STATUS[uploadResult.data.data.status].value;
-      currentFile.chunkIndex = i;
-      if (
-        uploadResult.data.status == STATUS.upload_seconds.value ||
-        uploadResult.data.status == STATUS.upload_finish.value
-      ) {
-        currentFile.uploadProgress = 100;
+      // currentFile.fileId=uploadResult.data.file_id;
+      // console.log(uploadResult.data.data.status);
+      currentFile.status=STATUS[uploadResult.data.data.status].value;
+      currentFile.chunkIndex=i;
+      if(uploadResult.data.data.status==STATUS.upload_seconds.value||uploadResult.data.data.status==STATUS.upload_finish.value){
+        currentFile.uploadProgress=100;
         emit("uploadCallback");
         break;
       }
     }
-  };
+  }
   
   const computeMD5 = (fileItem) => {
     let file = fileItem.file;
@@ -366,27 +433,28 @@
     };
   
     loadNext();
+    //分片计算MD5
     return new Promise((resolve, reject) => {
       let resultFile = getFileByUid(file.uid);
       fileReader.onload = (e) => {
         spark.append(e.target.result); // Append array buffer
         currentChunk++;
         if (currentChunk < chunks) {
-          /*  console.log(
-            `第${file.name},${currentChunk}分片解析完成, 开始第${
-              currentChunk + 1
-            } / ${chunks}分片解析`
-          ); */
+          // console.log(
+          //   `第${file.name},${currentChunk}分片解析完成, 开始第${
+          //     currentChunk + 1
+          //   } / ${chunks}分片解析`
+          // );
           let percent = Math.floor((currentChunk / chunks) * 100);
           resultFile.md5Progress = percent;
           loadNext();
         } else {
           let md5 = spark.end();
-          /*  console.log(
-            `MD5计算完成：${file.name} \nMD5：${md5} \n分片：${chunks} 大小:${
-              file.size
-            } 用时：${new Date().getTime() - time} ms`
-          ); */
+          // console.log(
+          //   `MD5计算完成：${file.name} \nMD5：${md5} \n分片：${chunks} 大小:${
+          //     file.size
+          //   } 用时：${new Date().getTime() - time} ms`
+          // );
           spark.destroy(); //释放缓存
           resultFile.md5Progress = 100;
           resultFile.status = STATUS.uploading.value;
