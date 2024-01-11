@@ -6,6 +6,13 @@
       <el-form class="login-register" :model="formData" :rules="rules" ref="formDataRef" @submit.prevent>
         <div class="login-title">蓝鲤网盘</div>
 
+        <!-- 游客访问 -->
+        <div v-if="opType == 1">
+          <el-form-item>
+            <el-button type="primary" round="true" @click="asVisitor">以游客身份访问</el-button>
+          </el-form-item>
+        </div>
+
         <!--输入电子邮箱-->
         <el-form-item prop="email">
           <el-input size="large" clearable placeholder="请输入电子邮箱地址" v-model="formData.email" maxLength="150">
@@ -42,28 +49,16 @@
                   </el-icon>
                 </template>
               </el-input>
-              <el-button class="send-mail-btn" type="primary" size="large" v-if="opType == 0" round @click="sendEmailCode0">
+              <el-button class="send-mail-btn" type="primary" size="large" v-if="opType == 0" round
+                @click="sendEmailCode0">
                 获取验证码
               </el-button>
-              <el-button class="send-mail-btn" type="primary" size="large" v-if="opType == 2" round @click="sendEmailCode2">
+              <el-button class="send-mail-btn" type="primary" size="large" v-if="opType == 2" round
+                @click="sendEmailCode2">
                 获取验证码
               </el-button>
             </div>
 
-            <!-- <el-popover placement="left" :width="500" trigger="click">
-              <div>
-                <p>1、在垃圾箱中查找邮箱验证码</p>
-                <p>2、在邮箱中头像->设置->反垃圾->白名单->设置邮件地址白名单</p>
-                <p>
-                  3、将邮箱XXX添加到白名单不知道怎么设置？
-                </p>
-              </div>
-              <template #reference>
-                <span class="a-link"  :style="{ 'font-size': '14px'}">
-                 未收到邮箱验证码？
-                </span>
-              </template>
-            </el-popover> -->
           </el-form-item>
 
           <!-- 昵称 -->
@@ -125,9 +120,7 @@
 
         <!-- 登录 -->
         <el-form-item v-if="opType == 1">
-          <!-- <div class="rememberme-panel">
-            <el-checkbox v-model="formData.remenberMe">记住我</el-checkbox>
-          </div> -->
+
           <div class="no-account">
             <a href="javascript:void(0)" class="a-link" @click="showPanel(2)">
               忘记密码？</a>
@@ -159,49 +152,12 @@
           </el-button>
         </el-form-item>
 
+
+
       </el-form>
     </div>
 
-    <!-- <Dialog
-      :show="dialogConfig4SendMailCode.show"
-      :title="dialogConfig4SendMailCode.title"
-      :buttons="dialogConfig4SendMailCode.buttons"
-      width="600px"
-      :showCancel="false"
-      @close="dialogConfig4SendMailCode.show = false">
 
-      <el-form
-        :model="formData4SendMailCode"
-        :rules="rules"
-        ref="formData4SendMailCodeRef"
-        label-width="80px"
-        @submit.prevent>
-        <el-form-item label="邮箱" prop="" >
-          {{formData.email}}
-        </el-form-item>
-
-        <el-form-item label="验证码" prop="checkCode" >
-            <div class="check-code-panel">
-            <el-input 
-            size="large" 
-            clearable placeholder="请输入验证码" 
-            v-model.trim="formData4SendMailCode.checkCode">
-              <template #prefix>
-                <el-icon>
-                  <CircleCheck />
-                </el-icon>
-              </template>
-            </el-input>
-            
-            <div height="44px">
-              <checkCode></checkCode>
-            </div>
-          </div>
-          </el-form-item>
-
-      </el-form>      
-
-    </Dialog> -->
 
   </div>
 </template>
@@ -226,18 +182,6 @@ const { proxy } = getCurrentInstance();
 import checkCode from "../components/checkCode.vue";
 
 
-//import { pa } from "element-plus/es/locale";
-
-
-// const api = {
-//   // checkCode: ""//api地址
-//   sendEmailCode: "/api/users/register",
-
-//   register: "/register",
-//   login: "/login",
-//   resetPwd: "/resetPwd",
-
-// }
 
 //检查确认密码是否与上一次输入密码一致
 const checkRePassword = (rule, value, callback) => {
@@ -249,14 +193,7 @@ const checkRePassword = (rule, value, callback) => {
 }
 
 
-//验证码验证
-// const checkCheckCode = (rule , value , callback)=>{
-//   if(value!==checkCodeRef.value.codeList.map(item => item.code).join('')){
-//     callback(new Error(rule.message));
-//   }else{
-//     callback();
-//   }
-// }
+
 const checkCheckCode = (rule, value, callback) => {
   const codeList = checkCodeRef.value.codeList;
   const joinedCodes = codeList.map(item => item.code).join('').toLowerCase(); // 转换为小写
@@ -311,6 +248,9 @@ components: {
   checkCode
 }
 
+const asVisitor = () => {
+  router.push('/visitors');
+}
 
 
 
@@ -396,85 +336,6 @@ const resetForm = () => {
 }
 
 
-//登录、注册、重置密码提交表单
-// const doSubmit = ()=>{
-//   formDataRef.value.validate(async (valid)=>{
-//     if(!valid){
-//       return;
-//     }
-//     if(opType.value == 0){
-//       //注册
-//     instance.post('/api/users/register',{
-//         username:formData.value.nickName,
-//         password: formData.value.password,
-//         email:formData.value.email,
-//         code: formData.value.emailCode,
-//     })
-//     .then(function(response){
-//       console.log(response);
-//       proxy.Message.success("注册成功");
-//       showPanel(1);
-//     })
-//     .catch(function(error){
-//       console.log(error);
-//     })
-
-
-//     }else if(opType.value == 1){
-//       //登录
-//     instance.post('/api/users/login',{
-//         email:formData.value.email,
-//         password: formData.value.password
-//     })
-//     .then(function(response){
-//       // console.log(response);
-//       const status_code=response.data.status_code;
-//       if(status_code===5000){
-//         proxy.Message.success("登录成功");
-//         const token = response.data.data.token;
-//         // localStorage.setItem('token', token);
-//         instance.get('/api/users/info',{
-//           headers:{
-//             'X-Token':token
-//           }
-//         })
-//         .then(function(response2){
-//             const userInfo={
-//               username:response2.data.data.username,
-//               email:response2.data.data.email,
-//               is_banned:response2.data.data.is_banned,
-//               is_admin:response2.data.data.is_admin
-//             }
-//             console.log(userInfo);
-//         })
-//         // 跳转页面
-//         // router.push("/");
-//       }
-
-//     })
-//     .catch(function(error){
-//       console.log(error);
-//     })
-
-//     }else if(opType.value == 2){
-//       //重置密码
-//       instance.post('/api/users/reset-password',{
-//         email:formData.value.email,
-//         password: formData.value.password
-//     })
-//     .then(function(response){
-//       console.log(response);
-//       proxy.Message.success("密码重置成功");
-//       showPanel(1);
-//     })
-//     .catch(function(error){
-//       console.log(error);
-//     })
-//     }
-
-//   });
-
-// };
 
 const doSubmit = async () => {
   formDataRef.value.validate(async (valid) => {
@@ -540,51 +401,51 @@ const doSubmit = async () => {
           // 跳转页面
           router.push("/");
         } else {
-            if(status_code == proxy.Status.incorrect_password){
-              proxy.Message.error("密码错误");
-              resetForm();
-              return;
-            }
-            if(status_code==proxy.Status.email_not_exist){
-              proxy.Message.error("该邮箱不存在");
-              resetForm();
-              return;
-            }
+          if (status_code == proxy.Status.incorrect_password) {
+            proxy.Message.error("密码错误");
+            resetForm();
+            return;
+          }
+          if (status_code == proxy.Status.email_not_exist) {
+            proxy.Message.error("该邮箱不存在");
+            resetForm();
+            return;
+          }
         }
 
-      }catch (error) {
-      console.log(error);
-    }
-  } else if (opType.value == 2) {
-    // 重置密码
-    try {
-      const response = await instance.post('/api/users/reset-password', {
-        email: formData.value.email,
-        // password: formData.value.registerPassword,
-        code: formData.value.emailCode,
-      });
-      console.log(response);
-      const status_code = response.data.status_code;
-      if (status_code == proxy.Status.incorrect_code) {
-        proxy.Message.error("邮箱验证码错误");
-      } else if (status_code == proxy.Status.success) {
-        const response2 = await instance.post('/api/users/set-new-password', {
-          email: formData.value.email,
-          new_password: formData.value.registerPassword,
-        });
-        console.log(response2);
-        proxy.Message.success("密码重置成功");
-        showPanel(1);
+      } catch (error) {
+        console.log(error);
       }
+    } else if (opType.value == 2) {
+      // 重置密码
+      try {
+        const response = await instance.post('/api/users/reset-password', {
+          email: formData.value.email,
+          // password: formData.value.registerPassword,
+          code: formData.value.emailCode,
+        });
+        console.log(response);
+        const status_code = response.data.status_code;
+        if (status_code == proxy.Status.incorrect_code) {
+          proxy.Message.error("邮箱验证码错误");
+        } else if (status_code == proxy.Status.success) {
+          const response2 = await instance.post('/api/users/set-new-password', {
+            email: formData.value.email,
+            new_password: formData.value.registerPassword,
+          });
+          console.log(response2);
+          proxy.Message.success("密码重置成功");
+          showPanel(1);
+        }
 
 
 
 
-    } catch (error) {
-      console.log(error);
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }
-});
+  });
 };
 
 

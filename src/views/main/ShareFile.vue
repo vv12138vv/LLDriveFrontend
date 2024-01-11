@@ -17,21 +17,28 @@
         >
           <el-form-item label="文件"> {{ formData.fileName }} </el-form-item>
           <template v-if="showType == 0">
-            <el-form-item label="有效期" prop="validType">
+            <el-form-item label="分享权限" prop="validType">
               <el-radio-group v-model="formData.validType">
+                <el-radio :label="0">公开</el-radio>
+                <el-radio :label="1">普通</el-radio>
+                <el-radio :label="2">私密</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="有效期" prop="validTime">
+              <el-radio-group v-model="formData.validTime">
                 <el-radio :label="0">5分钟</el-radio>
                 <el-radio :label="1">2小时</el-radio>
                 <el-radio :label="2">1天</el-radio>
                 <el-radio :label="3">7天</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="提取码" prop="codeType">
+            <el-form-item label="提取码" prop="codeType" v-if="formData.validType==2">
               <el-radio-group v-model="formData.codeType">
                 <el-radio :label="0">自定义</el-radio>
                 <!-- <el-radio :label="1">系统生成</el-radio> -->
               </el-radio-group>
             </el-form-item>
-            <el-form-item prop="code" v-if="formData.codeType == 0">
+            <el-form-item prop="code" v-if="formData.codeType == 0 && formData.validType==2">
               <el-input
                 clearable
                 placeholder="请输入6位提取码"
@@ -42,9 +49,6 @@
             </el-form-item>
           </template>
           <template v-else>
-            <!-- <el-form-item label="分享连接">
-              {{ shareUrl }}{{ resultInfo.shareId }}
-            </el-form-item> -->
             <el-form-item label="提取码">
               {{ resultInfo.code }}
             </el-form-item>
@@ -69,14 +73,13 @@
     baseURL: 'http://localhost:8848'
   })
   
-  // const api = {
-  //   shareFile: "/share/shareFile",
-  // };
+  
   const showType = ref(0);
   const formData = ref({});
   const formDataRef = ref();
   const rules = {
-    validType: [{ required: true, message: "请选择有效期" }],
+    validType:[{required: true,message: "请选择分享权限"}],
+    validTime: [{ required: true, message: "请选择有效期" }],
     codeType: [{ required: true, message: "请选择提取码类型" }],
     code: [
       { required: true, message: "请输入提取码" },
@@ -109,13 +112,9 @@
     }
     console.log(formData.value);
 
-    //   showType.value = 1;
-    //   resultInfo.value = result.data;
-    //   dialogConfig.value.buttons[0].text = "关闭";
-    //   showCancel.value = false;
-    // });
+    
     let expireTime = 0;
-    switch(formData.value.validType){
+    switch(formData.value.validTime){
       case(0):
         expireTime=5;
         break;
@@ -129,12 +128,26 @@
         expireTime=10080;
         break;
     }
+    let validType=0;
+    switch(formData.value.validType){
+      case(0):
+        validType=0;
+        break;
+      case(1):
+        validType=1;
+        break;
+      case(2):
+        validType=2;
+        break;
+    }
+
     try{
       let response = await instance.post('/api/share',{
         user_file_id: formData.value.user_file_id,
         code: formData.value.code,
         expire_time: expireTime,
-      })
+        valid_type: validType
+      });
       if(response.data.status_code != proxy.Status.success){
         return;
       }

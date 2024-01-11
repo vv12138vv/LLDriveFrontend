@@ -33,9 +33,6 @@
           </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <!-- <el-dropdown-item @click="updateAvatar">
-                修改头像
-              </el-dropdown-item> -->
               <el-dropdown-item @click="updatePassword">
                 修改密码
               </el-dropdown-item>
@@ -52,7 +49,7 @@
       <div class="left-sider">
         <div class="menu-list">
           <template v-for="item in menus">
-            <!-- 下面div的第一行有 v-if="item.allShow || (!item.allShow && userInfo.admin)" -->
+          
             <div
             v-if="item.allShow || (!item.allShow && userInfo.admin)"
               @click="jump(item)"
@@ -61,7 +58,6 @@
                 item.menuCode == currentMenu.menuCode ? 'active' : '',
               ]"
             >
-              <!-- <div :class="['iconfont', 'icon-' + item.icon]"></div> -->
               <div class="text">
                 {{ item.name }}
               </div>
@@ -119,11 +115,6 @@
         </router-view>
       </div>
     </div>
-    <!-- 修改头像
-    <UpdateAvatar
-      ref="updateAvatarRef"
-      @updateAvatar="reloadAvatar"
-    ></UpdateAvatar> -->
 
     <!--修改密码-->
     <UpdatePassword ref="updatePasswordRef"></UpdatePassword>
@@ -136,7 +127,6 @@
 
 
 <script setup>
-// import UpdateAvatar from "./UpdateAvatar.vue";
 import UpdatePassword from "./UpdatePassword.vue";
 import Uploader from "@/views/main/Uploader.vue";
 import {
@@ -267,10 +257,6 @@ const menus = [
         name: "用户管理",
         path: "/settings/userList",
       },
-      // {
-      //   path: "/settings/sysSetting",
-      //   name: "系统设置",
-      // },
     ],
   },
 ];

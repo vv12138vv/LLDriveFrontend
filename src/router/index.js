@@ -73,6 +73,11 @@ const router = createRouter({
           component: ()=> import("@/views/admin/FileList.vue")
         },
       ]
+    },
+    {
+      path: '/visitors',
+      name: 'Visitor',
+      component: ()=> import("@/views/share/Visitor.vue")
     }
     // {
     //   path: '/admin',

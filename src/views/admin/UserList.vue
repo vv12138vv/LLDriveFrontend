@@ -14,18 +14,6 @@
               ></el-input>
             </el-form-item>
           </el-col>
-          <!-- <el-col :span="4">
-            <el-form-item label="状态">
-              <el-select
-                clearable
-                placeholder="请选择状态"
-                v-model="searchFormData.status"
-              >
-                <el-option :value="1" label="启用"></el-option>
-                <el-option :value="0" label="禁用"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col> -->
           <el-col :span="4" :style="{ 'padding-left': '10px' }">
             <el-button type="primary" @click="loadDataList"> 查询 </el-button>
           </el-col>
@@ -104,20 +92,9 @@ const instance = axios.create({
 })
 
 
-// const api = {
-//   loadDataList: "/admin/loadUserList",
-//   updateUserStatus: "/admin/updateUserStatus",
-//   updateUserSpace: "/admin/updateUserSpace",
-// };
 
 //列表
 const columns = [
-  // {
-  //   label: "头像",
-  //   prop: "avatar",
-  //   width: 80,
-  //   scopedSlots: "avatar",
-  // },
   {
     label: "昵称",
     prop: "nickName",
@@ -239,25 +216,6 @@ const updateSpace = (data) => {
   });
 };
 
-// const submitForm = () => {
-//   formDataRef.value.validate(async (valid) => {
-//     if (!valid) {
-//       return;
-//     }
-//     let params = {};
-//     Object.assign(params, formData.value);
-//     let result = await proxy.Request({
-//       url: api.updateUserSpace,
-//       params: params,
-//     });
-//     if (!result) {
-//       return;
-//     }
-//     dialogConfig.value.show = false;
-//     proxy.Message.success("操作成功");
-//     loadDataList();
-//   });
-// };
 
 const submitForm = () => {
   formDataRef.value.validate(async (valid) => {

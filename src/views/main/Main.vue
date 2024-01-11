@@ -11,35 +11,22 @@
             :accept="fileAccept"
           >
             <el-button type="primary">
-              <!-- <span class="iconfont icon-upload"></span> -->
               上传
             </el-button>
           </el-upload>
+          <el-button color="#626aef" type="danger" @click="downloadFile" :disabled="selectFileIdList.length == 0">
+            下载
+          </el-button>
+          <el-button color="#adff41" type="success" @click="newFolder" v-if="category == 'all'">
+            新建文件夹
+          </el-button>
+          <el-button @click="delFileBatch" type="danger" :disabled="selectFileIdList.length == 0">
+            删除
+          </el-button>
+          <el-button @click="moveFolderBatch" type="warning" :disabled="selectFileIdList.length == 0">
+            批量移动
+          </el-button>
         </div>
-        <el-button color="#626aef" type="danger" @click="downloadFile" :disabled="selectFileIdList.length == 0">
-          <!-- <span class="iconfont icon-folder-add"></span> -->
-          下载
-        </el-button>
-        <el-button color="#adff41" type="success" @click="newFolder" v-if="category == 'all'">
-          <!-- <span class="iconfont icon-folder-add"></span> -->
-          新建文件夹
-        </el-button>
-        <el-button
-          @click="delFileBatch"
-          type="danger"
-          :disabled="selectFileIdList.length == 0"
-        >
-          <!-- <span class="iconfont icon-del"></span> -->
-          删除
-        </el-button>
-        <el-button
-          @click="moveFolderBatch"
-          type="warning"
-          :disabled="selectFileIdList.length == 0"
-        >
-          <!-- <span class="iconfont icon-move"></span> -->
-          批量移动
-        </el-button>
         <div class="search-panel">
           <el-input
             clearable
@@ -72,11 +59,7 @@
         @rowSelected="rowSelected"
       >
      
-
-      <!-- @mouseenter="showOp(row)"
-            @mouseleave="cancelShowOp(row)" -->
         <template #file_name="{ index, row }">
-          <!-- <div class="file-item"> -->
           <div class="file-item" @mouseenter="showOp(row)" @mouseleave="cancelShowOp(row)">
             <template
               v-if="(row.fileType == 3 || row.fileType == 1) && row.status == 3"
@@ -89,10 +72,6 @@
             </template>
             <span class="file-name" v-if="!row.showEdit" :title="row.fileName">
               <span @click="preview(row)">{{ row.fileName }}</span>
-              <!-- <span v-if="row.status == 0" class="transfer-status">转码中</span>
-              <span v-if="row.status == 1" class="transfer-status transfer-fail"
-                >转码失败</span
-              > -->
             </span>
             <div class="edit-panel" v-if="row.showEdit == true">
               <el-input
@@ -148,7 +127,6 @@
         </template>
         <template #file_size="{ index, row }">
           <span v-if="row.fileSize >= 0">
-           <!-- {{row.file_size}} -->
             {{ proxy.Utils.size2Str(row.fileSize) }}
           </span>
         </template>
@@ -157,7 +135,6 @@
 
     <div class="no-data" v-else>
       <div class="no-data-inner">
-        <!-- <Icon iconName="no_data" :width="120" fit="fill"></Icon> -->
         <div class="tips">当前文件夹为空</div>
         <div class="op-list">
           <el-upload
@@ -193,7 +170,7 @@
 
 <script setup>
 import CategoryInfo from "@/js/CategoryInfo.js";
-import FileShare from "./ShareFile.vue";
+import FileShare from "@/share/ShareFile.vue";
 import { ref, reactive, getCurrentInstance, nextTick, computed,toRef } from "vue";
 import { useRouter, useRoute } from "vue-router";
 const { proxy } = getCurrentInstance();
@@ -214,7 +191,6 @@ const userInfo = ref(
 );
 //添加文件
 const addFile = async (fileData) => {
-  // emit("addFile", { file: fileData.file, filePid: currentFolder.value.fileId });
   emit("addFile", { file: fileData.file, filePid: currentFolder.value.user_file_id });
 };
 
@@ -269,29 +245,7 @@ const fileNameFuzzy = ref();
 const showLoading = ref(true);
 const category = ref();
 
-// const loadDataList = async () => {
-//   console.log("main.vue: call loadDataList");
-//   let params = {
-//     pageNo: tableData.value.pageNo,
-//     pageSize: tableData.value.pageSize,
-//     fileNameFuzzy: fileNameFuzzy.value,
-//     category: category.value,
-//     filePid: currentFolder.value.fileId,
-//   };
-//   if (params.category !== "all") {
-//     delete params.filePid;
-//   }
-//   let result = await proxy.Request({//api
-//     url: api.loadDataList,
-//     showLoading: showLoading,
-//     params,
-//   });
-//   if (!result) {
-//     return;
-//   }
-//   tableData.value = result.data;
-//   editing.value = false;
-// };
+
 const loadDataList = async () => {
   console.log(category.value);
   console.log(typeof(category.value));
@@ -371,9 +325,6 @@ const newFolder = () => {
     // fileNameReal: "nnn",
   });
   console.log(tableData.value.list);
-//   nextTick(() => {
-//   editNameRef.value.focus();
-// });
 };
 
 const cancelNameEdit = (index) => {
@@ -392,23 +343,7 @@ const saveNameEdit = async (index) => {
     proxy.Message.warning("文件名不能为空且不能含有斜杠");
     return;
   }
-  // let url = api.rename;
-  // if (fileId == "") {
-  //   url = api.newFoloder;
-  // }
-  // let result = await proxy.Request({//api
-  //   url: url,
-  //   params: {
-  //     fileId,
-  //     filePid: filePid,
-  //     fileName: fileNameReal,
-  //   },
-  // });
-  // if (!result) {
-  //   return;
-  // }
-  // tableData.value.list[index] = result.data;
-  // const dirid = filePid == ""?null:filePid;
+  
   console.log("fileId: "+fileId);
   console.log("suffix: "+fileSuffix);
 
@@ -603,11 +538,6 @@ const moveFolderDone = async (folderId) => {
     return;
   }
   let filedIdsArray = [];
-  // if (currentMoveFile.value.fileId) {
-  //   filedIdsArray.push(currentMoveFile.value.fileId);
-  // } else {
-  //   filedIdsArray = filedIdsArray.concat(selectFileIdList.value);
-  // }
   if (currentMoveFile.value.fileId){
   let response = await instance.post("/api/files/move",{
     username: userInfo.value.nickName,
@@ -646,11 +576,6 @@ const preview = (data) => {
   }else{
     return;
   }
-  if (data.status != 2) {
-    proxy.Message.warning("文件正在转码中，无法预览");
-    return;
-  }
-  previewRef.value.showPreview(data, 0);
 };
 
 //目录

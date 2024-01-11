@@ -56,18 +56,7 @@ const instance = axios.create({
   baseURL: "http://localhost:8848"
 })
 
-// const api = {
-//   updatePassword: "updatePassword",
-// }
 
-
-// const checkRePassword = (rule , value , callback)=>{
-//   if(value!==formData.value.password){
-//     callback(new Error(rule.message));
-//   }else{
-//     callback();
-//   }
-// }
 
 const formData = ref({});
 const formDataRef = ref();
@@ -143,20 +132,6 @@ const submitForm = async()=>{
       }
 
 
-
-
-
-    // let result = await prroxy.Request({
-    //   url:api.updatePassword,
-    //   params:{
-    //     password: formData.value.password,
-    //   },
-    // });
-    // if(!result){
-    //   return;
-    // }
-    // dialogConfig.value.show = false;
-    // proxy.Message.success("密码修改成功");
   });
 }
 

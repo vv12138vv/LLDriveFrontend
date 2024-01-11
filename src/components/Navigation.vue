@@ -5,12 +5,6 @@
       <el-divider direction="vertical" />
     </template>
     <span v-if="folderList.length == 0" class="all-file">全部文件</span>
-    <!-- <span
-      class="link"
-      @click="setCurrentFolder(-1)"
-      v-if="folderList.length > 0"
-      >全部文件
-    </span> -->
     <template v-for="(item, index) in folderList">
       <span class="iconfont icon-right"></span>
       <span
@@ -18,13 +12,9 @@
         @click="setCurrentFolder(index)"
         v-if="index < folderList.length - 1"
         >
-        <!-- {{ item.fileName }} -->
         {{ item.file_name}}
         </span>
       <span v-if="index == folderList.length - 1" class="text">\
-      <!-- {{
-        item.fileName
-      }} -->
       {{
         item.file_name
       }}
@@ -57,11 +47,7 @@ const props = defineProps({
   },
 });
 
-// const api = {
-//   getFolderInfo: "/file/getFolderInfo",
-//   getFolderInfo4Share: "/showShare/getFolderInfo",
-//   getFolderInfo4Admin: "/admin/getFolderInfo",
-// };
+
 
 //分类
 const category = ref();
@@ -101,7 +87,6 @@ defineExpose({ openFolder, init });
 const backParent = () => {
   let currentIndex = null;
   for (let i = 0; i < folderList.value.length; i++) {
-    // if (folderList.value[i].fileId == currentFolder.value.fileId) {
     if (folderList.value[i].user_file_id == currentFolder.value.user_file_id) {
       currentIndex = i;
       break;

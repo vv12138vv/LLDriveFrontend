@@ -50,11 +50,7 @@ const { proxy } = getCurrentInstance();
 const router = useRouter();
 const route = useRoute();
 import axios from 'axios';
-// const api = {
-//   loadDataList: "/recycle/loadRecycleList",
-//   delFile: "/recycle/delFile",
-//   recoverFile: "/recycle/recoverFile",
-// };
+
 
 const instance = axios.create({
   baseURL: "http://localhost:8848"

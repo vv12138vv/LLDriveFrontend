@@ -75,16 +75,6 @@ const userInfo = ref(
 );
 
 const loadAllFolder = async () => {
-  // let result = await proxy.Request({
-  //   url: api.loadAllFolder,
-  //   params: {
-  //     filePid: filePid.value,
-  //     currentFileIds: currentFileIds.value,
-  //   },
-  // });
-  // if (!result) {
-  //   return;
-  // }
 
   let filename =  "";
   if(filePid.value != ""){
