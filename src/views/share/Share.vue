@@ -87,6 +87,7 @@ const columns = [
     label: "文件名",
     prop: "file_name",
     scopedSlots: "file_name",
+    width: 500,
   },
   {
     label: "分享者",
@@ -95,18 +96,15 @@ const columns = [
   {
     label: "分享时间",
     prop: "share_time",
-    width: 200,
   },
   {
     label: "失效时间",
     prop: "expire_time",
     scopedSlots: "expire_time",
-    width: 200,
   },
   {
     label: "分享次数",
     prop: "shared_count",
-    width: 200,
   }
 ];
 //搜索
