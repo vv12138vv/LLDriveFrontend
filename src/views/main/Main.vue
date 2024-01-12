@@ -14,6 +14,7 @@
               上传
             </el-button>
           </el-upload>
+        </div>
           <el-button color="#626aef" type="danger" @click="downloadFile" :disabled="selectFileIdList.length == 0">
             下载
           </el-button>
@@ -26,7 +27,6 @@
           <el-button @click="moveFolderBatch" type="warning" :disabled="selectFileIdList.length == 0">
             批量移动
           </el-button>
-        </div>
         <div class="search-panel">
           <el-input
             clearable
@@ -170,7 +170,7 @@
 
 <script setup>
 import CategoryInfo from "@/js/CategoryInfo.js";
-import FileShare from "@/share/ShareFile.vue";
+import FileShare from "./ShareFile.vue";
 import { ref, reactive, getCurrentInstance, nextTick, computed,toRef } from "vue";
 import { useRouter, useRoute } from "vue-router";
 const { proxy } = getCurrentInstance();

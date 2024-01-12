@@ -42,7 +42,6 @@ import Request from '@/utils/Request';
 import Confirm from '@/utils/Confirm';
 import Utils from '@/utils/Utils';
 import Status from '@/utils/Status-code';
-import uploader from 'vue-simple-uploader';
 const app = createApp(App);
 
 
@@ -60,7 +59,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.use(ElementPlus);
 app.use(HljsVuePlugin);
 app.use(router);
-app.use(uploader);
 
 app.component("Dialog",Dialog)
 // app.component("Avatar",Avatar)
